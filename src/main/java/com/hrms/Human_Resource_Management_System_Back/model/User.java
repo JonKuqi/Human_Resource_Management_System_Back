@@ -15,7 +15,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 @Getter
 @ToString
 @Builder
@@ -48,7 +48,7 @@ public class User implements UserDetails { //makes it an Spring boot object
 
     @Override
     public String getPassword() {
-        return "";
+        return passwordHash;
     }
 
     @Override
