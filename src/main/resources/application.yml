@@ -1,11 +1,15 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/default_db
+    url: jdbc:postgresql://localhost:5432/hrms_database
     username: postgres
     password: 1234
     driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
