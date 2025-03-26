@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+/**
+ * Controller for handling authentication-related requests.
+ * <p>
+ * This controller provides endpoints for user registration and authentication.
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -20,26 +26,38 @@ public class AuthenticationController {
 
     private final UserService service;
 
+    /**
+     * Handles user registration.
+     *
+     * @param request the {@link RegisterRequest} containing user details
+     * @return a {@link ResponseEntity} containing the {@link AuthenticationResponse}
+     */
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
-            ){
+    ) {
         return ResponseEntity.ok(service.register(request));
     }
+
     /**
-     * SEND
-     *  name:
-     *  email:
-     *  username:
-     *  password:
-
+     * Handles user authentication.
+     * <p>
+     * Expected request body:
+     * <ul>
+     *   <li>name</li>
+     *   <li>email</li>
+     *   <li>username</li>
+     *   <li>password</li>
+     * </ul>
+     * </p>
+     *
+     * @param request the {@link AuthenticationRequest} containing login credentials
+     * @return a {@link ResponseEntity} containing the {@link AuthenticationResponse}
      */
-
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
-    ){
+    ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
-
 }
