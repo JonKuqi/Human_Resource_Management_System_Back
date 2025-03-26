@@ -1,4 +1,4 @@
-package com.hrms.Human_Resource_Management_System_Back.controller;
+package com.hrms.Human_Resource_Management_System_Back.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
