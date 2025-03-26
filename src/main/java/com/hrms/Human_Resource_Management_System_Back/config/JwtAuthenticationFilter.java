@@ -17,43 +17,63 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 
+/**
+ * A filter for processing JWT-based authentication in HTTP requests.
+ * This filter intercepts requests and verifies JWT tokens to authenticate users.
+ */
 @Component
-@RequiredArgsConstructor //creates constructor using private final
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
+    /**
+     * Filters incoming HTTP requests to authenticate users based on JWT tokens.
+     *
+     * @param request     the HTTP request
+     * @param response    the HTTP response
+     * @param filterChain the filter chain
+     * @throws ServletException if an error occurs during request processing
+     * @throws IOException      if an I/O error occurs during request processing
+     */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        //Get header
         final String authorizationHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
+
+        // Proceed with the filter chain if the header is missing or does not contain a Bearer token
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authorizationHeader.substring(7); //Bearer  is 7
+
+        jwt = authorizationHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
-        if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
+
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if(jwtService.isTokenValid(jwt, userDetails)){
+
+
+            if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
-                        null,   //NULL amo depends
+                        null,
                         userDetails.getAuthorities()
                 );
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
+
+        // Continue with the request processing
         filterChain.doFilter(request, response);
     }
-
 }

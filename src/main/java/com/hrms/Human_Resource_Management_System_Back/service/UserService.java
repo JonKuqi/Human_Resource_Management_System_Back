@@ -13,6 +13,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class for handling user authentication and registration.
+ * <p>
+ * This service provides methods for registering new users and authenticating existing ones.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -21,13 +27,13 @@ public class UserService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * Registers a new user and generates a JWT token.
+     * @param request the registration request containing user details
+     * @return an {@link AuthenticationResponse} containing the generated JWT token
+     */
     public AuthenticationResponse register(RegisterRequest request) {
-        /**
-         *
-         *
-         */
         String salt = PasswordHasher.generateSalt();
-
 
         var user = User.builder()
                 .name(request.getFirstName())
@@ -44,12 +50,17 @@ public class UserService {
                 .build();
     }
 
-    public  AuthenticationResponse authenticate(AuthenticationRequest request) {
+    /**
+     * Authenticates a user and generates a JWT token.
+     * @param request the authentication request containing user credentials
+     * @return an {@link AuthenticationResponse} containing the generated JWT token
+     */
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(
-                  request.getEmail(),
-                  request.getPassword()
-          )
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
         );
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
