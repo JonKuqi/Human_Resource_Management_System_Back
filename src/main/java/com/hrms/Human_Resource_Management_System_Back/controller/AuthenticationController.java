@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final UserService service;
+    private final UserService userService;
 
     /**
      * Handles user registration.
@@ -36,7 +36,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(service.register(request));
+        return ResponseEntity.ok(userService.register(request));
     }
 
     /**
@@ -58,6 +58,6 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
-        return ResponseEntity.ok(service.authenticate(request));
+        return ResponseEntity.ok(userService.authenticate(request));
     }
 }

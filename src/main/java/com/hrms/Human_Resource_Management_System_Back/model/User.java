@@ -24,7 +24,7 @@ import java.util.List;
 public class User implements UserDetails { //makes it an Spring boot object
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
     private String name;
