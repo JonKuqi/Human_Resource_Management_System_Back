@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model;
 
+import com.hrms.Human_Resource_Management_System_Back.model.types.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,8 +18,6 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "`user`")
-@Getter
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,14 +27,17 @@ public class User implements UserDetails { //makes it an Spring boot object
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
-    private String name;
+    @Column(nullable = false)
     private String username;
+
     private String email;
     private String salt;
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private UserRole role;
+
+    private Timestamp createdOn;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
