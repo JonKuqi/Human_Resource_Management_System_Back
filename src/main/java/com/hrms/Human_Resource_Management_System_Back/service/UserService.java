@@ -4,10 +4,11 @@ import com.hrms.Human_Resource_Management_System_Back.config.JwtService;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterRequest;
-import com.hrms.Human_Resource_Management_System_Back.model.Role;
+import com.hrms.Human_Resource_Management_System_Back.model.types.UserRole;
 import com.hrms.Human_Resource_Management_System_Back.model.User;
+import com.hrms.Human_Resource_Management_System_Back.repository.BaseRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,30 +21,36 @@ import org.springframework.stereotype.Service;
  * </p>
  */
 @Service
-@RequiredArgsConstructor
-public class UserService {
-    private final UserRepository repository;
+@AllArgsConstructor
+public class UserService extends BaseService<User, Integer> {
+
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+
+    @Override
+    protected BaseRepository<User, Integer> getRepository() {
+        return userRepository;
+    }
 
     /**
      * Registers a new user and generates a JWT token.
      * @param request the registration request containing user details
      * @return an {@link AuthenticationResponse} containing the generated JWT token
      */
+
     public AuthenticationResponse register(RegisterRequest request) {
         String salt = PasswordHasher.generateSalt();
 
         var user = User.builder()
-                .name(request.getFirstName())
                 .email(request.getEmail())
                 .username(request.getUsername())
                 .salt(salt)
                 .passwordHash(PasswordHasher.generateSaltedHash(request.getPassword(), salt))
-                .role(Role.USER)
+                .role(UserRole.GENERAL_USER)
                 .build();
-        repository.save(user);
+        userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -62,11 +69,12 @@ public class UserService {
                         request.getPassword()
                 )
         );
-        var user = repository.findByEmail(request.getEmail())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
+
 }
