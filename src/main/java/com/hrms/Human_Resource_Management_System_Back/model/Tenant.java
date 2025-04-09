@@ -40,4 +40,7 @@ public class Tenant {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name="schema_name")
+    private String schemaName;
 }
