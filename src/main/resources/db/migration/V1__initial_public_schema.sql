@@ -151,5 +151,3 @@ CREATE TABLE IF NOT EXISTS public.job_tag (
                                        tag_name VARCHAR(50) NOT NULL,
                                        UNIQUE(job_listing_id, tag_name)
 );
-
-
