@@ -7,7 +7,7 @@ CREATE SCHEMA IF NOT EXISTS public;
 
 
 DO $$ BEGIN
-    CREATE TYPE user_role AS ENUM ('GENERAL_USER', 'TENANT_USER', 'ADMIN');
+    CREATE TYPE role_user AS ENUM ('GENERAL_USER', 'TENANT_USER', 'ADMIN');
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS public."user" (
                                              salt VARCHAR(300) NOT NULL,
                                              password_hash VARCHAR(400) NOT NULL,
                                              tenant_id INT REFERENCES tenant(tenant_id), -- Nullable for non-tenant users
-                                             role user_role NOT NULL DEFAULT 'GENERAL_USER',
-                                             created_at TIMESTAMP DEFAULT NOW() NOT NULL
+                                             role VARCHAR(20) DEFAULT 'GENERAL_USER',
+                                             created_at TIMESTAMP DEFAULT NOW()
 );
 
 

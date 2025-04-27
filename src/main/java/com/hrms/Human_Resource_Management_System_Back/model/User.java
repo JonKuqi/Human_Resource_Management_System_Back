@@ -1,9 +1,10 @@
 package com.hrms.Human_Resource_Management_System_Back.model;
 
-import com.hrms.Human_Resource_Management_System_Back.model.types.UserRole;
 import jakarta.persistence.*;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,14 +35,19 @@ public class User implements UserDetails { //makes it an Spring boot object
     private String salt;
     private String passwordHash;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+    @Column(name="tenant_id", nullable = true)
+    private Integer tenantId;
 
-    private Timestamp createdOn;
+
+    @Column(name = "role", nullable = true)
+    private String role;
+
+    @Column(name="created_at")
+    private Timestamp createdAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name())); //Roles
+        return List.of(new SimpleGrantedAuthority(role)); //Roles
     }
 
     @Override
