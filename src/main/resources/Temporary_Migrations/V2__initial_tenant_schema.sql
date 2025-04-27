@@ -1,13 +1,9 @@
-CREATE TYPE leave_status AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
--- Address table (required for user_tenant)
-CREATE TABLE IF NOT EXISTS address (
-                                       address_id SERIAL PRIMARY KEY,
-                                       country VARCHAR(100) NOT NULL,
-                                       city VARCHAR(100) NOT NULL,
-                                       street VARCHAR(255) NOT NULL,
-                                       zip VARCHAR(20) NOT NULL
-);
+DO $$ BEGIN
+    CREATE TYPE leave_status AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- User Tenant Table
 CREATE TABLE IF NOT EXISTS user_tenant (
@@ -16,7 +12,7 @@ CREATE TABLE IF NOT EXISTS user_tenant (
                                            last_name VARCHAR(50) NOT NULL,
                                            phone VARCHAR(20) NOT NULL,
                                            gender VARCHAR(20),
-                                           profile_photo BYTEA,
+                                           profile_photo oid,
                                            address_id INT NOT NULL REFERENCES address(address_id),
                                            created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
@@ -33,8 +29,8 @@ CREATE TABLE IF NOT EXISTS application (
                                            applicant_phone VARCHAR(20) NOT NULL,
                                            experience TEXT,
                                            applicant_comment TEXT,
-                                           cv BYTEA NOT NULL,
-                                           portfolio BYTEA,
+                                           cv oid,
+                                           portfolio oid,
                                            time_of_application TIMESTAMP DEFAULT NOW() NOT NULL,
                                            hr_comment TEXT,
                                            status VARCHAR(50) DEFAULT 'PENDING' NOT NULL,
@@ -59,7 +55,7 @@ CREATE TABLE IF NOT EXISTS role (
 );
 
 -- User Role Junction Table
-CREATE TABLE IF NOT EXISTS user_role (
+CREATE TABLE IF NOT EXISTS user_role_table (
                                          user_role_id SERIAL PRIMARY KEY,
                                          user_tenant_id INT NOT NULL REFERENCES user_tenant(user_tenant_id),
                                          role_id INT NOT NULL REFERENCES role(role_id),

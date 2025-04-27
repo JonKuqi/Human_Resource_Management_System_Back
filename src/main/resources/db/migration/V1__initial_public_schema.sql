@@ -4,10 +4,32 @@ CREATE SCHEMA IF NOT EXISTS public;
 
 -- Create ENUM types
 -- Create ENUM types first
-CREATE TYPE user_role AS ENUM ('GENERAL_USER', 'TENANT_USER', 'ADMIN');
-CREATE TYPE billing_cycle AS ENUM ('MONTHLY', 'YEARLY');
-CREATE TYPE subscription_status AS ENUM ('ACTIVE', 'INACTIVE', 'CANCELLED');
-CREATE TYPE employment_type AS ENUM ('FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'INTERNSHIP');
+
+
+DO $$ BEGIN
+    CREATE TYPE user_role AS ENUM ('GENERAL_USER', 'TENANT_USER', 'ADMIN');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE billing_cycle AS ENUM ('MONTHLY', 'YEARLY');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE subscription_status AS ENUM ('ACTIVE', 'INACTIVE', 'CANCELLED');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE employment_type AS ENUM ('FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'INTERNSHIP');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
 
 -- Address must come first as it's referenced by others
 CREATE TABLE IF NOT EXISTS public.address (
