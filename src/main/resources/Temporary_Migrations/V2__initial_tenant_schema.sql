@@ -1,13 +1,3 @@
-CREATE TYPE leave_status AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
-
--- Address table (required for user_tenant)
-CREATE TABLE IF NOT EXISTS address (
-                                       address_id SERIAL PRIMARY KEY,
-                                       country VARCHAR(100) NOT NULL,
-                                       city VARCHAR(100) NOT NULL,
-                                       street VARCHAR(255) NOT NULL,
-                                       zip VARCHAR(20) NOT NULL
-);
 
 -- User Tenant Table
 CREATE TABLE IF NOT EXISTS user_tenant (
@@ -16,16 +6,15 @@ CREATE TABLE IF NOT EXISTS user_tenant (
                                            last_name VARCHAR(50) NOT NULL,
                                            phone VARCHAR(20) NOT NULL,
                                            gender VARCHAR(20),
-                                           profile_photo BYTEA,
-                                           address_id INT NOT NULL REFERENCES address(address_id),
+                                           profile_photo oid,
+                                           address_id INT NOT NULL REFERENCES public.address(address_id),
                                            created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 -- Application Table
 CREATE TABLE IF NOT EXISTS application (
                                            application_id SERIAL PRIMARY KEY,
-                                           job_listing_id INT NOT NULL REFERENCES job_listing(job_listing_id),
-                                           user_general_id INT NOT NULL REFERENCES user_general(user_general_id),
+                                           job_listing_id INT NOT NULL REFERENCES public.job_listing(job_listing_id),
                                            applicant_name VARCHAR(100) NOT NULL,
                                            applicant_email VARCHAR(255) NOT NULL,
                                            applicant_gender VARCHAR(20),
@@ -33,8 +22,8 @@ CREATE TABLE IF NOT EXISTS application (
                                            applicant_phone VARCHAR(20) NOT NULL,
                                            experience TEXT,
                                            applicant_comment TEXT,
-                                           cv BYTEA NOT NULL,
-                                           portfolio BYTEA,
+                                           cv oid,
+                                           portfolio oid,
                                            time_of_application TIMESTAMP DEFAULT NOW() NOT NULL,
                                            hr_comment TEXT,
                                            status VARCHAR(50) DEFAULT 'PENDING' NOT NULL,
@@ -55,11 +44,11 @@ CREATE TABLE IF NOT EXISTS role (
                                     role_id SERIAL PRIMARY KEY,
                                     role_name VARCHAR(50) UNIQUE NOT NULL,
                                     description TEXT,
-                                    created_at TIMESTAMP DEFAULT NOW() NOT NULL
+                                    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- User Role Junction Table
-CREATE TABLE IF NOT EXISTS user_role (
+CREATE TABLE IF NOT EXISTS user_role_table (
                                          user_role_id SERIAL PRIMARY KEY,
                                          user_tenant_id INT NOT NULL REFERENCES user_tenant(user_tenant_id),
                                          role_id INT NOT NULL REFERENCES role(role_id),
@@ -125,7 +114,7 @@ CREATE TABLE IF NOT EXISTS leave_request (
                                              leave_text TEXT NOT NULL,
                                              start_date DATE NOT NULL,
                                              end_date DATE NOT NULL,
-                                             status leave_status DEFAULT 'PENDING' NOT NULL,
+                                             status TEXT DEFAULT 'PENDING' NOT NULL,
                                              reason TEXT NOT NULL,
                                              created_at TIMESTAMP DEFAULT NOW() NOT NULL,
                                              CHECK (end_date > start_date)
@@ -151,17 +140,3 @@ CREATE TABLE IF NOT EXISTS performance_evaluation (
                                                       CHECK (from_user_tenant_id <> to_user_tenant_id)
 );
 
--- Create trigger function for updated_at
-CREATE OR REPLACE FUNCTION trigger_set_updated_at()
-    RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Apply trigger to application table
-CREATE TRIGGER set_application_updated_at
-    BEFORE UPDATE ON application
-    FOR EACH ROW
-EXECUTE FUNCTION trigger_set_updated_at();

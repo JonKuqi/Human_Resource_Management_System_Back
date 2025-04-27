@@ -1,11 +1,11 @@
 package com.hrms.Human_Resource_Management_System_Back.service;
 
 import com.hrms.Human_Resource_Management_System_Back.config.JwtService;
+import com.hrms.Human_Resource_Management_System_Back.model.User;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterRequest;
-import com.hrms.Human_Resource_Management_System_Back.model.types.UserRole;
-import com.hrms.Human_Resource_Management_System_Back.model.User;
+import com.hrms.Human_Resource_Management_System_Back.model.types.RoleUser;
 import com.hrms.Human_Resource_Management_System_Back.repository.BaseRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -42,15 +42,21 @@ public class UserService extends BaseService<User, Integer> {
 
     public AuthenticationResponse register(RegisterRequest request) {
         String salt = PasswordHasher.generateSalt();
+        String role = String.valueOf(RoleUser.GENERAL_USER);
 
         var user = User.builder()
                 .email(request.getEmail())
                 .username(request.getUsername())
                 .salt(salt)
                 .passwordHash(PasswordHasher.generateSaltedHash(request.getPassword(), salt))
-                .role(UserRole.GENERAL_USER)
+                //.role(RoleUser.GENERAL_USER)
+                .tenantId(null)
                 .build();
+        System.out.println("HEREE");
+
+        System.out.println(user.toString());
         userRepository.save(user);
+        System.out.println("_______________sdfsfv");
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
