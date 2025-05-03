@@ -1,4 +1,4 @@
-package com.hrms.Human_Resource_Management_System_Back.config;
+package com.hrms.Human_Resource_Management_System_Back.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

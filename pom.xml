@@ -11,6 +11,7 @@
 		<relativePath/>
 	</parent>
 
+
 	<groupId>com.hrms</groupId>
 	<artifactId>Human_Resource_Management_System_Back</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -27,6 +28,8 @@
 
 		</dependencies>
 	</dependencyManagement>
+
+
 
 	<dependencies>
 		<!-- Spring Boot Starters -->
@@ -59,6 +62,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>org.hibernate.orm</groupId>-->
+<!--			<artifactId>hibernate-core</artifactId>-->
+<!--			<version>6.4.4.Final</version>-->
+<!--		</dependency>-->
 
 		<!-- PostgreSQL Database -->
 		<dependency>

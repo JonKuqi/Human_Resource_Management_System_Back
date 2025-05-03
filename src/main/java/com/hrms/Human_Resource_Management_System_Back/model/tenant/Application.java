@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,10 +55,12 @@ public class Application {
     private String applicantComment;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.BINARY)
     @Column(name = "cv", nullable = false)
     private byte[] cv;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.BINARY)
     @Column(name = "portfolio")
     private byte[] portfolio;
 

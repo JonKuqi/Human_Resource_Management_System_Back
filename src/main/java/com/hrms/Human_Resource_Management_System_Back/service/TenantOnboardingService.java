@@ -1,7 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.service;
 
 
-import com.hrms.Human_Resource_Management_System_Back.config.JwtService;
 import com.hrms.Human_Resource_Management_System_Back.model.Address;
 import com.hrms.Human_Resource_Management_System_Back.model.Tenant;
 import com.hrms.Human_Resource_Management_System_Back.model.User;
@@ -17,6 +16,7 @@ import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RoleRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserRoleRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
+import com.hrms.Human_Resource_Management_System_Back.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -141,7 +141,6 @@ public class TenantOnboardingService {
         User user = User.builder()
                 .username(rq.getUsername())
                 .email(rq.getEmail())
-                .salt(salt)
                 .passwordHash(hash)
                 .tenantId(t.getTenantId())
                 .role("TENANT_USER")
@@ -155,6 +154,8 @@ public class TenantOnboardingService {
 
         // 7. Save UserTenant (tenant schema)
         UserTenant ut = UserTenant.builder()
+                .user(user)
+                .tenant(t)
                 .firstName(rq.getFirstName())
                 .lastName(rq.getLastName())
                 .phone(rq.getPhone())
@@ -178,8 +179,15 @@ public class TenantOnboardingService {
                 .build();
         userRoleRepo.save(ur);
 
+        CustomUserDetails userDetails = new CustomUserDetails(ut, t.getSchemaName());
+
+        Map<String, Object> claims = Map.of(
+                "tenant", userDetails.getTenant(),
+                "role", userDetails.getRole()
+        );
+
         // 10. Generate auth token for login
-        String authToken = jwtService.generateToken(user);
+        String authToken = jwtService.generateToken(claims, userDetails.getUsername(), Duration.ofHours(12));
         return AuthenticationResponse.builder()
                 .token(authToken)
                 .build();

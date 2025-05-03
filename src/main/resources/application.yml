@@ -39,7 +39,16 @@ spring:
 
 
   jwt:
-    secret: aJH3xcaotUUB+7R2FDyDMxWnejGZrNFGtfa7wQ8bqhw=
+    secret: "aJH3xcaotUUB+7R2FDyDMxWnejGZrNFGtfa7wQ8bqhw="
 
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
 server:
   port: 8081
