@@ -1,6 +1,5 @@
-package com.hrms.Human_Resource_Management_System_Back.controller.tenant;
+package com.hrms.Human_Resource_Management_System_Back.controller;
 
-import com.hrms.Human_Resource_Management_System_Back.controller.BaseController;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.Notification;
 import com.hrms.Human_Resource_Management_System_Back.service.tenant.NotificationService;
 import lombok.AllArgsConstructor;

@@ -2,7 +2,12 @@ package com.hrms.Human_Resource_Management_System_Back.model;
 
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 
@@ -40,14 +45,19 @@ public class UserGeneral {
     private LocalDate birthDate;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.BINARY)
     @Column(name = "profile_photo")
     private byte[] profilePhoto;
 
     @Lob
-    @Column(name = "cv")
-    private byte[] cv;
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "cv", nullable = true)
+    private byte[] cvData;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.BINARY)
     @Column(name = "portfolio")
     private byte[] portfolio;
 }
+
+

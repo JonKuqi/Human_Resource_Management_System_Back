@@ -1,5 +1,6 @@
-package com.hrms.Human_Resource_Management_System_Back.config;
+package com.hrms.Human_Resource_Management_System_Back.component;
 
+import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,7 +44,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        System.out.println("➡️ Incoming request: " + request.getRequestURI());
+        System.out.println("Incoming request: " + request.getRequestURI());
+        // This part means that do not filter the incoming tenants
         if (path.startsWith("/api/public/tenants")) {
             filterChain.doFilter(request, response);
             return;
@@ -85,4 +87,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Continue with the request processing
         filterChain.doFilter(request, response);
     }
+
 }

@@ -2,11 +2,15 @@ package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
 
 import com.hrms.Human_Resource_Management_System_Back.model.Address;
+import com.hrms.Human_Resource_Management_System_Back.model.Tenant;
+import com.hrms.Human_Resource_Management_System_Back.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +26,14 @@ public class UserTenant {
     @Column(name = "user_tenant_id")
     private Integer userTenantId;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", nullable = false)
+    private Tenant tenant;
+
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
@@ -35,6 +47,7 @@ public class UserTenant {
     private String gender;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.BINARY)
     @Column(name = "profile_photo")
     private byte[] profilePhoto;
 

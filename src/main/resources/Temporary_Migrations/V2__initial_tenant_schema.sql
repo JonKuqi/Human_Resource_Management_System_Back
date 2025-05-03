@@ -2,11 +2,13 @@
 -- User Tenant Table
 CREATE TABLE IF NOT EXISTS user_tenant (
                                            user_tenant_id SERIAL PRIMARY KEY,
+                                           user_id INT NOT NULL REFERENCES public.user(user_id),
+                                           tenant_id INT NOT NULL REFERENCES public.tenant(tenant_id),
                                            first_name VARCHAR(50) NOT NULL,
                                            last_name VARCHAR(50) NOT NULL,
                                            phone VARCHAR(20) NOT NULL,
                                            gender VARCHAR(20),
-                                           profile_photo oid,
+                                           profile_photo BYTEA,
                                            address_id INT NOT NULL REFERENCES public.address(address_id),
                                            created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
@@ -22,8 +24,8 @@ CREATE TABLE IF NOT EXISTS application (
                                            applicant_phone VARCHAR(20) NOT NULL,
                                            experience TEXT,
                                            applicant_comment TEXT,
-                                           cv oid,
-                                           portfolio oid,
+                                           cv BYTEA,
+                                           portfolio BYTEA,
                                            time_of_application TIMESTAMP DEFAULT NOW() NOT NULL,
                                            hr_comment TEXT,
                                            status VARCHAR(50) DEFAULT 'PENDING' NOT NULL,
