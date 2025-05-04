@@ -50,7 +50,9 @@ public class SecurityConfiguration {
                                 "/api/public/user-general/register",
                                 //"/api/public/user-general",
                                 "/api/tenant/user-tenant/register",
-                                "/api/public/tenants/**").permitAll()
+                                "/api/public/tenants/**",
+                                "/swagger-ui/*",
+                                "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
