@@ -32,12 +32,12 @@ public class AuthenticationController {
      * @param request the {@link RegisterRequest} containing user details
      * @return a {@link ResponseEntity} containing the {@link AuthenticationResponse}
      */
-    @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
-    ) {
-        return ResponseEntity.ok(userService.register(request));
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<AuthenticationResponse> register(
+//            @RequestBody RegisterRequest request
+//    ) {
+//        return ResponseEntity.ok(userService.register(request));
+//    }
 
     /**
      * Handles user authentication.
