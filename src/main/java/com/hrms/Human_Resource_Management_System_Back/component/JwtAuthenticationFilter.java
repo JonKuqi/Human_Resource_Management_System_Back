@@ -46,6 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println("Incoming request: " + request.getRequestURI());
         // This part means that do not filter the incoming tenants
+
         if (path.startsWith("/api/public/tenants")) {
             filterChain.doFilter(request, response);
             return;
