@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/performance-evals")
+@RequestMapping("/api/v1/tenant/performance-eval")
 @AllArgsConstructor
-public class PerformanceEvalController extends BaseController<PerformanceEvaluation, Integer> {
+public class PerformanceEvalController extends BaseUserSpecificController<PerformanceEvaluation, Integer> {
     private final PerformanceEvalService svc;
 
     @Override
-    protected PerformanceEvalService getService() {
+    protected PerformanceEvalService getServiceSpecific() {
         return svc;
     }
 }

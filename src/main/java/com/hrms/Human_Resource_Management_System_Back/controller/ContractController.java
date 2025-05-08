@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/contracts")
+@RequestMapping("/api/v1/tenant/contracts")
 @AllArgsConstructor
-public class ContractController extends BaseController<Contract, Integer> {
+public class ContractController extends BaseUserSpecificController<Contract, Integer> {
     private final ContractService svc;
 
     @Override
-    protected ContractService getService() {
+    protected ContractService getServiceSpecific() {
         return svc;
     }
 }

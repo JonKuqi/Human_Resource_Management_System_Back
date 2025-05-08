@@ -8,7 +8,7 @@ import com.hrms.Human_Resource_Management_System_Back.model.types.RoleUser;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserGeneralRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
 import com.hrms.Human_Resource_Management_System_Back.security.CustomUserDetails;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,7 +45,7 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
                 .tenantId(null)
                 .build();
 
-        userRepository.save(user);
+        User u = userRepository.save(user);
 
 
         // 2. Save UserGeneral using real request fields
@@ -64,7 +64,7 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
         userGeneralRepository.save(userGeneral);
 
         // 3. Wrap and generate token
-        CustomUserDetails userDetails = new CustomUserDetails(userGeneral);
+        CustomUserDetails userDetails = new CustomUserDetails(u.getUserId(), userGeneral);
 
         Map<String, Object> claims = Map.of(
                 "tenant", userDetails.getTenant(),

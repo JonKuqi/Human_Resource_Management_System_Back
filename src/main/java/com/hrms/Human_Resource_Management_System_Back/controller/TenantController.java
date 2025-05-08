@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/public/tenants")
+@RequestMapping("/api/v1/public/tenant")
 public class TenantController extends BaseController<Tenant, Integer> {
 
     @Override
@@ -40,6 +40,7 @@ public class TenantController extends BaseController<Tenant, Integer> {
     /** Step 1: Register tenant and send verification email */
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody TenantRegistrationRequest rq) {
+  ;
         onboardingService.registerTenant(rq);
         return ResponseEntity.accepted().build();
     }

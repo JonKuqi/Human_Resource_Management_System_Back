@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/tenant/user-tenant")
+@RequestMapping("/api/v1/tenant/user-tenant")
 @AllArgsConstructor
-public class UserTenantController extends BaseController<UserTenant, Integer> {
+public class UserTenantController extends BaseUserSpecificController<UserTenant, Integer> {
     private final UserTenantService service;
 
     @Override
-    protected UserTenantService getService() {
+    protected UserTenantService getServiceSpecific() {
         return service;
     }
 

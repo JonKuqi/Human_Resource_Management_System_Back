@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/skills")
+@RequestMapping("/api/v1/public/skill")
 @AllArgsConstructor
 public class SkillController extends BaseController<Skill, Integer> {
 

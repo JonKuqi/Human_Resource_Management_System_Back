@@ -2,6 +2,7 @@ package com.hrms.Human_Resource_Management_System_Back.config;
 
 
 import com.hrms.Human_Resource_Management_System_Back.component.JwtAuthenticationFilter;
+import com.hrms.Human_Resource_Management_System_Back.middleware.AuthorizationFilter;
 import com.hrms.Human_Resource_Management_System_Back.middleware.SchemaRoutingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final SchemaRoutingFilter schemaRoutingFilter;
+    private final AuthorizationFilter authorizationFilter;
 
     /**
      * Configures the security filter chain.
@@ -47,10 +49,11 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**",
+                                "/api/v1/public/user/authenticate",
                                 "/api/public/user-general/register",
                                 //"/api/public/user-general",
-                                "/api/tenant/user-tenant/register",
-                                "/api/public/tenants/**",
+                                "/api/v1/tenant/user-tenant/register",
+                                "/api/v1/public/tenant/**",
                                 "/swagger-ui/*",
                                 "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
@@ -60,7 +63,9 @@ public class SecurityConfiguration {
 
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 // then pick the tenant
-                .addFilterBefore(schemaRoutingFilter, JwtAuthenticationFilter.class);
+                .addFilterBefore(schemaRoutingFilter, JwtAuthenticationFilter.class)
+                .addFilterBefore(authorizationFilter, JwtAuthenticationFilter.class);
+
         return http.build();
     }
 }

@@ -30,7 +30,7 @@ public class SchemaRoutingFilter extends OncePerRequestFilter {
             @NonNull FilterChain chain) throws ServletException, IOException {
 
         try {
-            System.out.println("______________ INSIDE FILTER _______________");
+            System.out.println("______________ INSIDE Schema Routing FILTER _______________");
             String auth = request.getHeader("Authorization");
             if (auth != null && auth.startsWith("Bearer ")) {
                 String token = auth.substring(7);

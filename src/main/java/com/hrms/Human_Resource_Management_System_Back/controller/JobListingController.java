@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/job-listings")
+@RequestMapping("/api/v1/public/job-listing")
 @AllArgsConstructor
 public class JobListingController extends BaseController<JobListing, Integer> {
 

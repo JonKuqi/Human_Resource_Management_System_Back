@@ -18,7 +18,7 @@ import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserRole
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -60,6 +60,7 @@ public class TenantOnboardingService {
 
     @Transactional
     public void registerTenant(TenantRegistrationRequest rq) {
+        System.out.println("IN Tenant Service");
             // persist address
         Address addr = addressRepo.save(rq.getAddress().toEntity());
 
@@ -93,6 +94,7 @@ public class TenantOnboardingService {
                 "Click to verify: https://your‑frontend.com/verify?token=" + token
         );
         mailSender.send(msg);
+        jdbc.execute("SET search_path TO public");
     }
 
     @Transactional
@@ -136,8 +138,8 @@ public class TenantOnboardingService {
         }
         jdbc.execute("SET search_path TO \"" + "public" + "\"");
         // 5. Save user in PUBLIC schema
-        String salt = PasswordHasher.generateSalt();
-        String hash = PasswordHasher.generateSaltedHash(rq.getPassword(), salt);
+
+        String hash = passwordEncoder.encode(rq.getPassword());
         User user = User.builder()
                 .username(rq.getUsername())
                 .email(rq.getEmail())
@@ -179,7 +181,7 @@ public class TenantOnboardingService {
                 .build();
         userRoleRepo.save(ur);
 
-        CustomUserDetails userDetails = new CustomUserDetails(ut, t.getSchemaName());
+        CustomUserDetails userDetails = new CustomUserDetails(ut.getUser().getUserId(), ut, t.getSchemaName());
 
         Map<String, Object> claims = Map.of(
                 "tenant", userDetails.getTenant(),

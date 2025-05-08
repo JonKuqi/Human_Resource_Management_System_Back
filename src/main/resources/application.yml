@@ -10,6 +10,7 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
+    transaction-manager: transactionManager
     hibernate:
       ddl-auto: none
     show-sql: true
@@ -19,6 +20,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -50,5 +52,8 @@ logging:
         type:
           descriptor:
             sql: TRACE
+      springframework:
+        web: DEBUG
+
 server:
   port: 8081

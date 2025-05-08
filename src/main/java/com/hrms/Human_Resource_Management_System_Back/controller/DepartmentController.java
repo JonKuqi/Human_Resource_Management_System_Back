@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/departments")
+@RequestMapping("/api/v1/tenant/department")
 @AllArgsConstructor
 public class DepartmentController extends BaseController<Department, Integer> {
     private final DepartmentService svc;

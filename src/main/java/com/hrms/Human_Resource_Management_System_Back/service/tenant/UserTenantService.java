@@ -11,9 +11,9 @@ import com.hrms.Human_Resource_Management_System_Back.repository.AddressReposito
 import com.hrms.Human_Resource_Management_System_Back.repository.TenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
-import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
+import com.hrms.Human_Resource_Management_System_Back.service.BaseUserSpecificService;
 import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class UserTenantService extends BaseService<UserTenant, Integer> {
+public class UserTenantService extends BaseUserSpecificService<UserTenant, Integer> {
     private final UserTenantRepository repo;
     private final UserTenantRepository tenantRepo;
     private final TenantRepository tenantRepository;
@@ -54,7 +54,8 @@ public class UserTenantService extends BaseService<UserTenant, Integer> {
                 .role("TENANT_USER")
                 .tenantId(tenant.getTenantId())
                 .build();
-        userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+        //userRepository.flush();
 
         /* 3. persist Address in tenant schema */
         Address addr = addressRepository.save(rq.getAddress().toEntity());
@@ -76,10 +77,17 @@ public class UserTenantService extends BaseService<UserTenant, Integer> {
                 .build();
         tenantRepo.save(ut);
 
+//        Optional<User> us = userRepository.findByEmail(user.getEmail());
+//        User u = us.orElseThrow(() -> new RuntimeException("User not found"));
+
+       // System.out.println("______INSIDE USER TENANT____");
+        //System.out.println(updatedUser.getUserId());
+
         /* 5. JWT */
         Map<String,Object> claims = Map.of(
+                "user_id", updatedUser.getUserId(),
                 "tenant", tenant.getSchemaName(),   // e.g. "tenant_abc"
-                "role",   "TENANT_USER"
+                "role", "TENANT_USER"
         );
         String jwt = jwtService.generateToken(
                 claims,

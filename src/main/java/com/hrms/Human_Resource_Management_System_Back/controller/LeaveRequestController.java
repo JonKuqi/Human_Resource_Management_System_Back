@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/leave-requests")
+@RequestMapping("/api/v1/tenant/leave-request")
 @AllArgsConstructor
-public class LeaveRequestController extends BaseController<LeaveRequest, Integer> {
+public class LeaveRequestController extends BaseUserSpecificController<LeaveRequest, Integer> {
     private final LeaveRequestService svc;
 
     @Override
-    protected LeaveRequestService getService() {
+    protected LeaveRequestService getServiceSpecific() {
         return svc;
     }
 }

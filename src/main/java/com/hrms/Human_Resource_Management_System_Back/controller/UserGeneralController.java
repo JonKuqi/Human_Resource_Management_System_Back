@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api/public/user-general")
+@RequestMapping("/api/v1/public/user-general")
 @AllArgsConstructor
 public class UserGeneralController extends BaseController<UserGeneral, Integer>{
     private final UserGeneralService userGeneralService;
