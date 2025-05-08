@@ -38,9 +38,9 @@ public class JobListing {
     @Column(name = "location", nullable = false, length = 255)
     private String location;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "employment_type", nullable = false)
-    private EmploymentType employmentType;
+    private String employmentType;
 
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
