@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
+import com.hrms.Human_Resource_Management_System_Back.model.TenantPermission;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,9 @@ public class RolePermission {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "permission_id", nullable = false)
-    private Permission permission;
+    private TenantPermission tenantPermission;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_role_id", nullable = false)
+    private Role targetRoleId;
 }

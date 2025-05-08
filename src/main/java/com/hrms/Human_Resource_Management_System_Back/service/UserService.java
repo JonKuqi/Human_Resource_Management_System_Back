@@ -109,6 +109,7 @@ public class UserService extends BaseService<User, Integer> {
 
         // 3. Create JWT with tenant and role claims
         Map<String, Object> claims = Map.of(
+                "user_id", userDetails.getUserId(),
                 "tenant", userDetails.getTenant(),
                 "role",   userDetails.getRole()
         );

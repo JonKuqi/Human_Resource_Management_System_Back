@@ -7,7 +7,7 @@ import com.hrms.Human_Resource_Management_System_Back.repository.UserGeneralRepo
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.security.CustomUserDetails;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,6 +42,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         return new CustomUserDetails(
+                user.getUserId(),
                 user.getEmail(),
                 user.getPasswordHash(),
                 user.getRole(),

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/role-permissions")
+@RequestMapping("/api/v1/tenant/role-permission")
 @AllArgsConstructor
 public class RolePermissionController extends BaseController<RolePermission, Integer> {
     private final RolePermissionService svc;

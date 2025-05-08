@@ -17,29 +17,34 @@ import java.util.Collections;
 @Getter
 public class CustomUserDetails implements UserDetails {
 
+    private final Integer userId;
     private final String username;
     private final String password;
     private final String role;
     private final String tenant;
 
-    public CustomUserDetails(UserGeneral userGeneral) {
+    public CustomUserDetails(Integer userId, UserGeneral userGeneral) {
+        this.userId = userId;
         this.username = userGeneral.getUser().getEmail();
         this.password = userGeneral.getUser().getPasswordHash();
         this.role = userGeneral.getUser().getRole();
         this.tenant = "public";
     }
 
-    public CustomUserDetails(String email,
+    public CustomUserDetails(Integer userId,
+                             String email,
                              String passwordHash,
                              String role,
                              String tenantSchema) {
+        this.userId = userId;
         this.username = email;       // or userId.toString() if you prefer
         this.password = passwordHash;
         this.role     = role;
         this.tenant   = tenantSchema;
     }
 
-    public CustomUserDetails(UserTenant userTenant, String tenantSchema) {
+    public CustomUserDetails(Integer userId, UserTenant userTenant, String tenantSchema) {
+        this.userId = userId;
         this.username = userTenant.getUser().getEmail();
         this.password = userTenant.getUser().getPasswordHash();
         this.role = userTenant.getUser().getRole();

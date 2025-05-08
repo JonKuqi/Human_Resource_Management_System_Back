@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/addresses")
+@RequestMapping("/api/v1/public/address")
 @AllArgsConstructor
 public class AddressController extends BaseController<Address, Integer> {
 

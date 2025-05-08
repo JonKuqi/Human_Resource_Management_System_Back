@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/positions")
+@RequestMapping("/api/v1/tenant/position")
 @AllArgsConstructor
 public class PositionController extends BaseController<Position, Integer> {
     private final PositionService svc;

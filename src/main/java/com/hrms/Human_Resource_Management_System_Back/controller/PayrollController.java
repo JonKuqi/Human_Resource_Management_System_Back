@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/payrolls")
+@RequestMapping("/api/v1/tenant/payroll")
 @AllArgsConstructor
-public class PayrollController extends BaseController<Payroll, Integer> {
+public class PayrollController extends BaseUserSpecificController<Payroll, Integer> {
     private final PayrollService svc;
 
     @Override
-    protected PayrollService getService() {
+    protected PayrollService getServiceSpecific() {
         return svc;
     }
 }
