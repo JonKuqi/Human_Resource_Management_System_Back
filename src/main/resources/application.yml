@@ -58,4 +58,4 @@ logging:
         web: DEBUG
 
 server:
-  port: 8081
+  port: ${PORT:8080}
