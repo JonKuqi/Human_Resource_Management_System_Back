@@ -1,6 +1,7 @@
 package com.hrms.Human_Resource_Management_System_Back.service;
 
 import com.hrms.Human_Resource_Management_System_Back.model.User;
+import com.hrms.Human_Resource_Management_System_Back.model.UserGeneral;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
 import com.hrms.Human_Resource_Management_System_Back.repository.BaseRepository;
@@ -9,12 +10,15 @@ import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
 import com.hrms.Human_Resource_Management_System_Back.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Service class for handling user authentication and registration.
@@ -107,12 +111,36 @@ public class UserService extends BaseService<User, Integer> {
         );
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
 
+//        System.out.println("USER DETAILS: " +userDetails);
+//        System.out.println("    "+ userDetails.getUsername());
+//        System.out.println("    "+userDetails.getUserId());
+//        System.out.println("    "+userDetails.getTenant());
+//        System.out.println("   "+userDetails.getRole());
+
+
+        if (userDetails.getRole().equals("GENERAL_USER")){
+            Optional<UserGeneral> optionalUG = userGeneralRepository.findByUser_Email(userDetails.getUsername());
+
+            UserGeneral ug = optionalUG.orElseThrow(() ->
+                    new BadCredentialsException("UserGeneral not found for email: " + userDetails.getUsername())
+            );
+
+            if (!ug.isVerified()) {
+                throw new BadCredentialsException("Email not verified.");
+            }
+
+        }
+
+
+
         // 3. Create JWT with tenant and role claims
-        Map<String, Object> claims = Map.of(
-                "user_id", userDetails.getUserId(),
-                "tenant", userDetails.getTenant(),
-                "role",   userDetails.getRole()
-        );
+        Map<String,Object> claims = new HashMap<>();
+        claims.put("sub",     userDetails.getUsername());
+        claims.put("user_id", userDetails.getUserId());
+        claims.put("role",    userDetails.getRole());
+        if (userDetails.getTenant() != null) {
+            claims.put("tenant", userDetails.getTenant());
+        }
         String jwtToken = jwtService.generateToken(claims, userDetails.getUsername(), Duration.ofHours(12));
 
         return AuthenticationResponse.builder()

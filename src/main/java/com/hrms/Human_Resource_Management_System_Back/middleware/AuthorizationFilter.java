@@ -44,6 +44,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain chain) throws ServletException, IOException {
 
+        if (shouldNotFilter(request)) {
+            chain.doFilter(request, response);
+            return;
+        }
+        System.out.println("SHOULD NOT FILTER WAS NOT EXECUTED");
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
