@@ -4,7 +4,7 @@ app:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres.railway.internal:5432/railway
+    url: jdbc:postgresql://switchyard.proxy.rlwy.net:28769/railway?sslmode=require
     username: postgres
     password: zaUUrGQFqrBXGzFhilhSgzYIpxsWzYMj
     driver-class-name: org.postgresql.Driver
