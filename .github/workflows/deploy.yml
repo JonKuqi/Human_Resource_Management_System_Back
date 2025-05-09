@@ -32,7 +32,9 @@ jobs:
       - name: Install and log in to Railway
         run: |
           npm install -g @railway/cli
-          railway login --apiKey ${{ secrets.RAILWAY_API_KEY }}
+          railway login
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_KEY }}
 
       - name: Deploy to Railway
         run: railway up --service hrms-api --detach
