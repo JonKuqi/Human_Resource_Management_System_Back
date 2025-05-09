@@ -29,12 +29,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Install and log in to Railway
-        run: |
-          npm install -g @railway/cli
-          railway login
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_KEY }}
-
-      - name: Deploy to Railway
-        run: railway up --service hrms-api --detach
+#      - name: Install Railway CLI
+#        run: npm install -g @railway/cli
+#
+#      - name: Deploy to Railway
+#        env:
+#          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_KEY }}   # <-- token here
+#        run: railway up --service hrms-api --detach --yes # --yes skips prompts
