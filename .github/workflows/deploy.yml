@@ -3,7 +3,7 @@ name: CI/CD - Deploy to Railway
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
+      - deployment-test # Trigger on push to the main branch
 
 jobs:
   build-and-deploy:
