@@ -3,8 +3,7 @@ name: CI/CD - Deploy to Railway
 on:
   push:
     branches:
-      - deployment-test # Trigger on push to the main branch
-
+      - deployment-test  # Trigger on push to the deployment branch
 
 jobs:
   build-and-deploy:
@@ -20,6 +19,9 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Make Maven wrapper executable
+        run: chmod +x mvnw
 
       - name: Build JAR
         run: ./mvnw clean package -DskipTests
