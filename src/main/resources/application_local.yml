@@ -1,14 +1,14 @@
 app:
   frontend:
-    url: ${FRONTEND_URL:http://localhost:3000}
-
+    url: http://localhost:3000
 
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/hrms_database
+    username: postgres
+    password: 1234
     driver-class-name: org.postgresql.Driver
+
 
   jpa:
     transaction-manager: transactionManager
@@ -30,10 +30,10 @@ spring:
     clean-disabled: true
 
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    host: in-v3.mailjet.com
+    port: 587
+    username: 37d203cfe4a184fef576db74d6774438
+    password: 9c114704da4644404d4da3f387a6a6a2
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -41,8 +41,9 @@ spring:
   profiles:
     active: default
 
+
   jwt:
-    secret: ${JWT_SECRET}
+    secret: "aJH3xcaotUUB+7R2FDyDMxWnejGZrNFGtfa7wQ8bqhw="
 
 
 logging:
