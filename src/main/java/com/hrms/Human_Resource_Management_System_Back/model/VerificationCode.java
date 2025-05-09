@@ -26,6 +26,13 @@ public class VerificationCode {
     @Column(name = "code_hash", nullable = false, length = 6)
     private String codeHash;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

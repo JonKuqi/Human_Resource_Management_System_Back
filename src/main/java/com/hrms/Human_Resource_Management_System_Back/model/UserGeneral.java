@@ -58,6 +58,10 @@ public class UserGeneral {
     @JdbcTypeCode(SqlTypes.BINARY)
     @Column(name = "portfolio")
     private byte[] portfolio;
+
+    @Column(nullable = false)
+    private boolean verified;
+
 }
 
 

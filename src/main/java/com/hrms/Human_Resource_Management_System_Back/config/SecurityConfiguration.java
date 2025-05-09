@@ -28,6 +28,7 @@ public class SecurityConfiguration {
     private final SchemaRoutingFilter schemaRoutingFilter;
     private final AuthorizationFilter authorizationFilter;
 
+
     /**
      * Configures the security filter chain.
      * <p>
@@ -50,10 +51,12 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**",
                                 "/api/v1/public/user/authenticate",
-                                "/api/public/user-general/register",
+                                "/api/v1/public/user-general/register",
                                 //"/api/public/user-general",
                                 "/api/v1/tenant/user-tenant/register",
                                 "/api/v1/public/tenant/**",
+                                "/api/v1/public/user-general/verify",
+                                "/api/v1/public/user-general/resend",
                                 "/swagger-ui/*",
                                 "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()

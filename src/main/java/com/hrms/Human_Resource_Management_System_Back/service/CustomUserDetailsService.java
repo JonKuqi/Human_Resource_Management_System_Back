@@ -40,6 +40,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .orElseThrow(() ->
                             new IllegalStateException("Tenant row missing"));
         }
+        if (!"TENANT_USER".equals(user.getRole())) {
+            schema = "public";          // fallback for public/general/system users
+        }
 
         return new CustomUserDetails(
                 user.getUserId(),
