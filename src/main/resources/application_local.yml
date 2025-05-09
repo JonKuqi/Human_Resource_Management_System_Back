@@ -1,61 +1,61 @@
-app:
-  frontend:
-    url: http://localhost:3000
-
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/hrms_database
-    username: postgres
-    password: 1234
-    driver-class-name: org.postgresql.Driver
-
-
-  jpa:
-    transaction-manager: transactionManager
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    baseline-version: 1
-    locations: classpath:db/migration
-    clean-disabled: true
-
-  mail:
-    host: in-v3.mailjet.com
-    port: 587
-    username: 37d203cfe4a184fef576db74d6774438
-    password: 9c114704da4644404d4da3f387a6a6a2
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-
-  profiles:
-    active: default
-
-
-  jwt:
-    secret: "aJH3xcaotUUB+7R2FDyDMxWnejGZrNFGtfa7wQ8bqhw="
-
-
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql: TRACE
-      springframework:
-        web: DEBUG
-
-server:
-  port: 8081
+#app:
+#  frontend:
+#    url: http://localhost:3000
+#
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/hrms_database
+#    username: postgres
+#    password: 1234
+#    driver-class-name: org.postgresql.Driver
+#
+#
+#  jpa:
+#    transaction-manager: transactionManager
+#    hibernate:
+#      ddl-auto: none
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#    database: postgresql
+#    database-platform: org.hibernate.dialect.PostgreSQLDialect
+#
+#  flyway:
+#    enabled: true
+#    baseline-on-migrate: true
+#    baseline-version: 1
+#    locations: classpath:db/migration
+#    clean-disabled: true
+#
+#  mail:
+#    host: in-v3.mailjet.com
+#    port: 587
+#    username: 37d203cfe4a184fef576db74d6774438
+#    password: 9c114704da4644404d4da3f387a6a6a2
+#    properties:
+#      mail.smtp.auth: true
+#      mail.smtp.starttls.enable: true
+#
+#  profiles:
+#    active: default
+#
+#
+#  jwt:
+#    secret: "aJH3xcaotUUB+7R2FDyDMxWnejGZrNFGtfa7wQ8bqhw="
+#
+#
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql: TRACE
+#      springframework:
+#        web: DEBUG
+#
+#server:
+#  port: 8081
