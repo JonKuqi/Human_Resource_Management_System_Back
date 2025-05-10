@@ -33,9 +33,9 @@ public class TenantSubscription {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "subscription_status default 'ACTIVE'")
-    private SubscriptionStatus status;
+
+    @Column(name = "status", nullable = false)
+    private String status;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

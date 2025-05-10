@@ -5,6 +5,7 @@ import com.hrms.Human_Resource_Management_System_Back.component.JwtAuthenticatio
 import com.hrms.Human_Resource_Management_System_Back.middleware.AuthorizationFilter;
 import com.hrms.Human_Resource_Management_System_Back.middleware.SchemaRoutingFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -57,6 +58,7 @@ public class SecurityConfiguration {
                                 "/api/v1/public/tenant/**",
                                 "/api/v1/public/user-general/verify",
                                 "/api/v1/public/user-general/resend",
+                                "/api/v1/public/subscriptions/**",
                                 "/swagger-ui/*",
                                 "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
@@ -70,5 +72,19 @@ public class SecurityConfiguration {
                 .addFilterBefore(authorizationFilter, JwtAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public FilterRegistrationBean<SchemaRoutingFilter> schemaRoutingFilterRegistration(SchemaRoutingFilter filter) {
+        FilterRegistrationBean<SchemaRoutingFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setOrder(1); // i pari
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean<AuthorizationFilter> authorizationFilterRegistration(AuthorizationFilter filter) {
+        FilterRegistrationBean<AuthorizationFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setOrder(2); // i dyti
+        return registration;
     }
 }
