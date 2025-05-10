@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
  */
 
 @Component
+@Order(1)
 @RequiredArgsConstructor
 public class SchemaRoutingFilter extends OncePerRequestFilter {
 
@@ -38,6 +40,7 @@ public class SchemaRoutingFilter extends OncePerRequestFilter {
 
                 // read the "tenant" claim directly; no need to wait for authentication
                 String schema = (String) jwtService.extractClaim(token, c -> c.get("tenant"));
+                System.out.println("Schema is : "+schema);
                 if (schema != null && !schema.isBlank()) {
                     System.out.println("FILTER IS HERE -> tenant = {}"+ schema);
                     TenantCtx.setTenant(schema);

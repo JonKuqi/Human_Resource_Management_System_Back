@@ -1,14 +1,13 @@
 package com.hrms.Human_Resource_Management_System_Back.service.tenant;
 
 import com.hrms.Human_Resource_Management_System_Back.middleware.TenantCtx;
-import com.hrms.Human_Resource_Management_System_Back.model.Address;
-import com.hrms.Human_Resource_Management_System_Back.model.Tenant;
-import com.hrms.Human_Resource_Management_System_Back.model.User;
+import com.hrms.Human_Resource_Management_System_Back.model.*;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterTenantUserRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserTenant;
 import com.hrms.Human_Resource_Management_System_Back.repository.AddressRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.TenantRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.TenantSubscriptionRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseUserSpecificService;
@@ -32,6 +31,7 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final TenantSubscriptionRepository tenantSubscriptionRepository;
 
     @Override
     protected UserTenantRepository getRepository() {
@@ -64,6 +64,7 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
         // The SchemaRoutingFilter + Hibernate multi‑tenancy will do
         // this automatically once TenantContext is set. Here we just
         // build the entity and save.
+        validateMaxUsersLimit(tenant);
         UserTenant ut = UserTenant.builder()
                 .user(user)
                 .tenant(tenant)
@@ -98,5 +99,21 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
         return AuthenticationResponse.builder()
                 .token(jwt)
                 .build();
+    }
+
+    private void validateMaxUsersLimit(Tenant tenant) {
+        TenantSubscription tenantSubscription = tenantSubscriptionRepository.findByTenant(tenant)
+                .orElseThrow(() -> new RuntimeException("Subscription not found for tenant"));
+
+        Subscription subscription = tenantSubscription.getSubscription();
+
+        Integer maxUsers = subscription.getMaxUsers();
+        if (maxUsers == null) return;
+
+        int currentUsers =Integer.TYPE.cast(repo.count());
+
+        if (currentUsers >= maxUsers) {
+            throw new RuntimeException("Maximum user limit reached for your subscription plan (" + maxUsers + " users allowed).");
+        }
     }
 }

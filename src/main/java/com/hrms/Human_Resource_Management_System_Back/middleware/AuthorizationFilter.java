@@ -11,16 +11,21 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
+@Order(2)
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
     private final RolePermissionService rolePermissionService;
@@ -71,6 +76,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
             String verb = request.getMethod();        // GET / POST / PUT / DELETE …
             String path = request.getRequestURI();    // full request path
+            System.out.println("Requested verb: " + verb);
+            System.out.println("Requested path: " + path);
 
             boolean permitted = false;
             List<String> targetRoles = new ArrayList<>();
@@ -98,6 +105,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 System.out.println("The request is FORBIDEN.");
                 return;
             }
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
             /* ────────────────────── PATH REWRITE ────────────────────── */
             HttpServletRequest reqToUse = request;            // default: unchanged
