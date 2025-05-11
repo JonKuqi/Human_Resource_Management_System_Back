@@ -1,12 +1,17 @@
 package com.hrms.Human_Resource_Management_System_Back.service.tenant;
 
+import com.hrms.Human_Resource_Management_System_Back.model.TenantPermission;
+import com.hrms.Human_Resource_Management_System_Back.model.dto.RolePermissionReplaceRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.UserRolePermissionDto;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.Role;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.RolePermission;
+import com.hrms.Human_Resource_Management_System_Back.repository.TenantPermissionRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RolePermissionRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RoleRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -19,6 +24,8 @@ import java.util.List;
 @AllArgsConstructor
 public class RolePermissionService extends BaseService<RolePermission, Integer> {
     private final RolePermissionRepository repo;
+    private final RoleRepository roleRepo;
+    private final TenantPermissionRepository permRepo;
 
     @Override
     protected RolePermissionRepository getRepository() {
@@ -64,4 +71,39 @@ public class RolePermissionService extends BaseService<RolePermission, Integer> 
         }
         return sb.toString();
     }
+
+
+    public List<RolePermission> findByRoleId(Integer roleId) {
+        return repo.findAllByRole_RoleId(roleId);
+    }
+
+    @Transactional
+    public void replacePermissions(Integer roleId, RolePermissionReplaceRequest req) {
+
+        // 1. hard-delete old rows
+        repo.deleteByRoleId(roleId);
+
+        // 2. fetch the Role and (optionally) targetRole once
+        Role role        = roleRepo.getReferenceById(roleId);
+        Role targetRole  = req.getTargetRoleId() != null
+                ? roleRepo.getReferenceById(req.getTargetRoleId())
+                : null;
+
+        // 3. build new RolePermission entities
+        List<RolePermission> fresh = req.getPermissionIds()
+                .stream()
+                .map(pid -> {
+                    TenantPermission p = permRepo.getReferenceById(pid);
+                    return RolePermission.builder()
+                            .role(role)
+                            .tenantPermission(p)
+                            .targetRoleId(targetRole)
+                            .build();
+                })
+                .toList();
+
+        repo.saveAll(fresh);
+    }
+
+
 }
