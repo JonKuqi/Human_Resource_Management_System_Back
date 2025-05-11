@@ -14,7 +14,7 @@ spring:
     transaction-manager: transactionManager
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -57,7 +57,8 @@ logging:
         SQL: DEBUG
         type:
           descriptor:
-            sql: TRACE
+            sql:
+              BasicBinder: DEBUG
       springframework:
         web: DEBUG
 
