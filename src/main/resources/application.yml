@@ -41,6 +41,11 @@ spring:
   profiles:
     active: default
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
 
   jwt:
     secret: "aJH3xcaotUUB+7R2FDyDMxWnejGZrNFGtfa7wQ8bqhw="
