@@ -3,6 +3,7 @@ package com.hrms.Human_Resource_Management_System_Back.repository.tenant;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.UserRolePermissionDto;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.RolePermission;
 import com.hrms.Human_Resource_Management_System_Back.repository.BaseRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -25,4 +26,10 @@ public interface RolePermissionRepository extends BaseRepository<RolePermission,
     WHERE ut.user.userId = :userTenantId
 """)
     List<UserRolePermissionDto> findScopedPermissionsByUserTenantId(@Param("userTenantId") Integer userTenantId);
+
+    List<RolePermission> findAllByRole_RoleId(Integer roleId);
+
+    @Modifying
+    @Query("DELETE FROM RolePermission rp WHERE rp.role.roleId = :roleId")
+    void deleteByRoleId(@Param("roleId") Integer roleId);
 }

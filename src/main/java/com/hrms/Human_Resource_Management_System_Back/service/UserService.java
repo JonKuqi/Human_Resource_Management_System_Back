@@ -142,6 +142,7 @@ public class UserService extends BaseService<User, Integer> {
             claims.put("tenant", userDetails.getTenant());
         }
         String jwtToken = jwtService.generateToken(claims, userDetails.getUsername(), Duration.ofHours(12));
+        System.out.println(" JWT TOKEN IS: " + jwtToken);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)

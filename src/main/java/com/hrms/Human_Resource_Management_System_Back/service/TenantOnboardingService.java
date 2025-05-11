@@ -18,16 +18,16 @@ import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserRole
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.sql.DataSource;
@@ -40,7 +40,7 @@ import java.util.UUID;
 
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TenantOnboardingService {
     private final TenantRepository tenantRepo;
     private final AddressRepository addressRepo;
@@ -55,6 +55,9 @@ public class TenantOnboardingService {
     private final PasswordEncoder passwordEncoder;
 
     private static String REG_TYPE = "TENANT_REG";
+
+    @Value("${app.frontend.url}")
+    private String frontEndUrl;
 
     /** STEP 1: Register tenant & send email */
 
@@ -86,14 +89,22 @@ public class TenantOnboardingService {
         System.out.println(" \uD83D\uDD10 The jwt token is" + token);
 
         // 5. send verification email
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom("kucijon@gmail.com");
-        msg.setTo(t.getContactEmail());
-        msg.setSubject("Please verify your email");
-        msg.setText(
-                "Click to verify: https://your‑frontend.com/verify?token=" + token
+//        SimpleMailMessage msg = new SimpleMailMessage();
+//        msg.setFrom("kucijon@gmail.com");
+//        msg.setTo(t.getContactEmail());
+//        msg.setSubject("Please verify your email");
+//        msg.setText(
+//                "Click to verify: https://your‑frontend.com/verify?token=" + token
+//        );
+//
+//        mailSender.send(msg);
+
+
+        String text = "Click to verify: "+frontEndUrl+"/tenant/onboarding?token=" + token;
+
+        EmailSenderService.sendVerificationEmail(
+                t.getContactEmail(),  "Please verify your company creation.", text
         );
-        mailSender.send(msg);
         jdbc.execute("SET search_path TO public");
     }
 

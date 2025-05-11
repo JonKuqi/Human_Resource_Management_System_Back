@@ -2,8 +2,10 @@ package com.hrms.Human_Resource_Management_System_Back.middleware;
 
 
 import com.hrms.Human_Resource_Management_System_Back.model.dto.UserRolePermissionDto;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserRole;
 import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
 import com.hrms.Human_Resource_Management_System_Back.service.tenant.RolePermissionService;
+import com.hrms.Human_Resource_Management_System_Back.service.tenant.UserRoleService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
     private final RolePermissionService rolePermissionService;
+    private final UserRoleService userRoleService;
     private final JwtService jwtService;
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -63,6 +66,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
             // 1) Global role inside the token (e.g. SYSTEM_ADMIN vs TENANT_USER)
             String globalRole = (String) jwtService.extractClaim(token, c -> c.get("role"));
+
+            if ("GENERAL_USER".equals(globalRole)) {
+                //List of api allowed bu GENERAL USERS
+                chain.doFilter(request, response);
+                return;
+            }
             if (!"TENANT_USER".equals(globalRole)) {
                 chain.doFilter(request, response);   // not a tenant user → skip RBAC
                 return;
@@ -73,6 +82,21 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
             // 3) Fetch every <verb,resource> the user is allowed to access
             List<UserRolePermissionDto> allowed = rolePermissionService.getUserRolePermissions(userId);
+
+            //OWNER HAS ALL THE PERMISSIONS.
+            boolean isOwner = false;
+            List<UserRole> rolesOfUser = userRoleService.getUserRoles(userId);
+            for (UserRole userRole : rolesOfUser) {
+                if (userRole.getRole().getRoleName().equals("OWNER")){
+                    isOwner = true;
+                    break;
+                }
+            }
+            if(isOwner){
+                System.out.println(" IS OWNER: every request is ALLOWED!");
+                chain.doFilter(request, response);
+                return;
+            }
 
             String verb = request.getMethod();        // GET / POST / PUT / DELETE …
             String path = request.getRequestURI();    // full request path

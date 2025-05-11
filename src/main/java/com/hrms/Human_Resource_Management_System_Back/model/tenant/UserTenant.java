@@ -1,6 +1,7 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hrms.Human_Resource_Management_System_Back.model.Address;
 import com.hrms.Human_Resource_Management_System_Back.model.Tenant;
 import com.hrms.Human_Resource_Management_System_Back.model.User;
@@ -31,6 +32,7 @@ public class UserTenant {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
@@ -52,6 +54,7 @@ public class UserTenant {
     private byte[] profilePhoto;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
