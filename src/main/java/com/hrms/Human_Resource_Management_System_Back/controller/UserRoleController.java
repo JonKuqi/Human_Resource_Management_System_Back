@@ -11,7 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/tenant/user-role")
 @AllArgsConstructor
-public class UserRoleController extends BaseController<UserRole, Integer> {
+public class
+UserRoleController extends BaseController<UserRole, Integer> {
     private final UserRoleService svc;
 
     @Override
