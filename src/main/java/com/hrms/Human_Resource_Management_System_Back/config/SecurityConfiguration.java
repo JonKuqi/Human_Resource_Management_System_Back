@@ -67,6 +67,7 @@ public class SecurityConfiguration {
                                 "/api/v1/public/user-general/resend",
                                 "/api/v1/public/subscriptions/**",
                                 "/api/v1/public/permission",
+                                //"/api/v1/public/user/filter",
                                 "/swagger-ui/*",
                                 "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
