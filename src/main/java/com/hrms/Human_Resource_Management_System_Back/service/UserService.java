@@ -138,7 +138,7 @@ public class UserService extends BaseService<User, Integer> {
             throw new IllegalArgumentException("Current password is incorrect");
         }
 
-        // 3) validate new password (length etc.) – very simple example
+        // 3) validate new password
         if (dto.getNewPassword().length() < 6) {
             throw new IllegalArgumentException("Password must be at least 6 characters");
         }
