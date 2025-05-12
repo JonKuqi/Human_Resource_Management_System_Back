@@ -12,11 +12,14 @@ import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseUserSpecificService;
 import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -115,5 +118,13 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
         if (currentUsers >= maxUsers) {
             throw new RuntimeException("Maximum user limit reached for your subscription plan (" + maxUsers + " users allowed).");
         }
+    }
+    @Transactional
+    public void updateProfilePhoto(Integer id, MultipartFile file) throws IOException {
+        var entity = repo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User-Tenant not found"));
+
+        entity.setProfilePhoto(file.getBytes());   // or your mapper → dto
+        repo.save(entity);
     }
 }

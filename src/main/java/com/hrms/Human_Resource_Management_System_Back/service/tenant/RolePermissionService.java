@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -80,23 +81,25 @@ public class RolePermissionService extends BaseService<RolePermission, Integer> 
     @Transactional
     public void replacePermissions(Integer roleId, RolePermissionReplaceRequest req) {
 
-        // 1. hard-delete old rows
-        repo.deleteByRoleId(roleId);
+        repo.deleteByRoleId(roleId);   // JPQL @Modifying DELETE, inside Tx
 
-        // 2. fetch the Role and (optionally) targetRole once
-        Role role        = roleRepo.getReferenceById(roleId);
-        Role targetRole  = req.getTargetRoleId() != null
-                ? roleRepo.getReferenceById(req.getTargetRoleId())
-                : null;
+        Role role = roleRepo.getReferenceById(roleId);
+        List<Integer> targetList = req.getTargetRoleIds() != null
+                ? req.getTargetRoleIds()
+                : req.getPermissionIds().stream().map(i -> 0).toList();
 
-        // 3. build new RolePermission entities
-        List<RolePermission> fresh = req.getPermissionIds()
-                .stream()
-                .map(pid -> {
-                    TenantPermission p = permRepo.getReferenceById(pid);
+
+        List<RolePermission> fresh = IntStream.range(0, req.getPermissionIds().size())
+                .mapToObj(i -> {
+                    Integer permId  = req.getPermissionIds().get(i);
+                    Integer tgtId   = targetList.get(i);
+                    TenantPermission perm = permRepo.getReferenceById(permId);
+                    Role targetRole = tgtId != null && tgtId != 0
+                            ? roleRepo.getReferenceById(tgtId)
+                            : null;
                     return RolePermission.builder()
                             .role(role)
-                            .tenantPermission(p)
+                            .tenantPermission(perm)
                             .targetRoleId(targetRole)
                             .build();
                 })
