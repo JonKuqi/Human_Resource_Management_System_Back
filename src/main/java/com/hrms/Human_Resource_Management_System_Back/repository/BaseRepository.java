@@ -1,8 +1,9 @@
 package com.hrms.Human_Resource_Management_System_Back.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
+public interface BaseRepository<T, ID> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
 }

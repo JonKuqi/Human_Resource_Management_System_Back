@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public abstract class BaseController<T, ID> {
@@ -65,4 +66,15 @@ public abstract class BaseController<T, ID> {
         getService().deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @Operation(
+            summary = "Filters an entity ",
+            description = "Deletes the entity based on columns example /users/filter?email=example@..&username=user123"
+    )
+    @GetMapping("/filter")
+    public ResponseEntity<List<T>> filter(@RequestParam Map<String, String> filters) {
+        return ResponseEntity.ok(getService().findAllByFilter(filters));
+    }
+
 }

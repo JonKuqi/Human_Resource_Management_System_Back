@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class RolePermissionReplaceRequest {
-    private List<Integer> permissionIds;   // the selected check-box IDs
-    private Integer targetRoleId;          // optional: same as roleId if N/A
+    private List<Integer> permissionIds;   // same length
+    private List<Integer> targetRoleIds;   // use 0 for ALL → service stores null
 }
