@@ -10,6 +10,20 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * Represents a leave request entity in the system.
+ * <p>
+ * - leaveRequestId: The unique identifier for the leave request.
+ * - userTenant: The user tenant associated with the leave request.
+ * - leaveText: The text description of the leave request.
+ * - startDate: The start date of the leave.
+ * - endDate: The end date of the leave.
+ * - status: The status of the leave request (e.g., PENDING, APPROVED, REJECTED).
+ * - reason: The reason for the leave request.
+ * - createdAt: The timestamp when the leave request was created.
+ * </p>
+ */
+
 @Entity
 @Table(name = "leave_request")
 @Data

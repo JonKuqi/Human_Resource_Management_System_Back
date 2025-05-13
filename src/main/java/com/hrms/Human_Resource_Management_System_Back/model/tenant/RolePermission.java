@@ -7,6 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a role permission entity in the system.
+ * <p>
+ * - rolePermissionId: The unique identifier for the role permission.
+ * - role: The role associated with the permission.
+ * - tenantPermission: The tenant permission associated with the role.
+ * - targetRoleId: The target role for which the permission applies.
+ * </p>
+ */
 @Entity
 @Table(name = "role_permission")
 @Data

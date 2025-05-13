@@ -3,7 +3,17 @@ package com.hrms.Human_Resource_Management_System_Back.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-
+/**
+ * Represents an address entity in the system used for User tenant and Tenant.
+ * <p>
+ * List of attributes:
+ * - addressId: The unique identifier for the address.
+ * - country: The country of the address.
+ * - city: The city of the address.
+ * - street: The street of the address.
+ * - zip: The zip code of the address.
+ * </p>
+ */
 @Entity
 @Table(name = "address", schema = "public")
 @Data

@@ -10,6 +10,21 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * Represents a contract entity in the system.
+ * <p>
+ * - contractId: The unique identifier for the contract.
+ * - userTenant: The user tenant associated with the contract.
+ * - position: The position held by the user tenant under the contract.
+ * - contractType: The type of the contract (e.g., full-time, part-time).
+ * - startDate: The start date of the contract.
+ * - endDate: The end date of the contract.
+ * - salary: The salary for the contract, with precision and scale for decimal values.
+ * - terms: The terms of the contract.
+ * - createdAt: The timestamp when the contract was created.
+ * </p>
+ */
+
 @Entity
 @Table(name = "contract")
 @Data

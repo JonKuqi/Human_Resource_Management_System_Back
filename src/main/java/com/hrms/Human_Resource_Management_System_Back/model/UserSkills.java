@@ -5,6 +5,17 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 
+/**
+ * Represents a user skills entity in the public schema of the system.
+ * <p>
+ * - userSkillsId: The unique identifier for the user skills.
+ * - userGeneral: The associated user general entity.
+ * - skill: The skill associated with the user.
+ * - value: The value or proficiency level of the skill.
+ * - issuedAt: The date when the skill was issued.
+ * - validUntil: The expiration date of the skill, if applicable.
+ * </p>
+ */
 @Entity
 @Table(name = "user_skills", schema = "public")
 @Data

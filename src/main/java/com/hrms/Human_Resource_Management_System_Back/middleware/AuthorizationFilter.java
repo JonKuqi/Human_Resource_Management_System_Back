@@ -26,26 +26,69 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This filter is responsible for performing authorization checks based on roles and permissions.
+ * <p>
+ * It intercepts incoming HTTP requests, extracts the JWT token, and checks whether the user has the necessary
+ * permissions to access the requested resource. Additionally, it handles path rewrites based on role-based access control (RBAC).
+ * </p>
+ */
 @Component
 @Order(2)
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
+
+    /**
+     * Service for fetching role-based permissions.
+     */
     private final RolePermissionService rolePermissionService;
+
+    /**
+     * Service for managing user roles.
+     */
     private final UserRoleService userRoleService;
+
+    /**
+     * Service for handling JWT token extraction and validation.
+     */
     private final JwtService jwtService;
 
+    /**
+     * Path matcher used for matching paths based on the configured permissions.
+     */
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
+    /**
+     * Determines whether the request should be filtered.
+     * <p>
+     * This method skips filtering for paths under "/api/v1/public", which are assumed to be public endpoints.
+     * </p>
+     *
+     * @param request the incoming HTTP request
+     * @return {@code true} if the request should be skipped, otherwise {@code false}
+     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        // use servletPath so you don’t accidentally include context-path
         String path = request.getServletPath();
         boolean skip = path.startsWith("/api/v1/public");
-        System.out.println("[AuthorizationFilter] shouldNotFilter: {} for path={} " + skip + "    "+ path);
+        System.out.println("[AuthorizationFilter] shouldNotFilter: {} for path={} " + skip + "    " + path);
         return skip;
     }
 
-
+    /**
+     * This method performs the authorization logic by checking user roles and permissions.
+     * <p>
+     * It extracts the JWT token from the authorization header, checks the global role (GENERAL_USER, TENANT_USER),
+     * and then performs role-based access control by checking the permissions assigned to the user for the requested resource.
+     * It also handles path rewrites based on the roles of the user.
+     * </p>
+     *
+     * @param request the incoming HTTP request
+     * @param response the HTTP response
+     * @param chain the filter chain
+     * @throws ServletException if the request processing fails
+     * @throws IOException if there is an error during I/O operations
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -64,42 +107,43 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             System.out.println("______________INSIDE AUTHORIZATION FILTER_______________");
 
-            // 1) Global role inside the token (e.g. SYSTEM_ADMIN vs TENANT_USER)
+            // 1) Extract the global role from the JWT token (e.g. SYSTEM_ADMIN vs TENANT_USER)
             String globalRole = (String) jwtService.extractClaim(token, c -> c.get("role"));
 
             if ("GENERAL_USER".equals(globalRole)) {
-                //List of api allowed bu GENERAL USERS
+                // If the user is a general user, allow the request without RBAC checks
                 chain.doFilter(request, response);
                 return;
             }
             if (!"TENANT_USER".equals(globalRole)) {
-                chain.doFilter(request, response);   // not a tenant user → skip RBAC
+                // If the user is not a tenant user, skip RBAC checks
+                chain.doFilter(request, response);
                 return;
             }
 
-            // 2) Tenant user id – JWT stores it as number, not String
+            // 2) Extract the user ID from the JWT token (tenant user ID)
             Integer userId = ((Number) jwtService.extractClaim(token, c -> c.get("user_id"))).intValue();
 
-            // 3) Fetch every <verb,resource> the user is allowed to access
+            // 3) Fetch the list of permissions for the user
             List<UserRolePermissionDto> allowed = rolePermissionService.getUserRolePermissions(userId);
 
-            //OWNER HAS ALL THE PERMISSIONS.
+            // Check if the user is an OWNER, as owners have all permissions
             boolean isOwner = false;
             List<UserRole> rolesOfUser = userRoleService.getUserRoles(userId);
             for (UserRole userRole : rolesOfUser) {
-                if (userRole.getRole().getRoleName().equals("OWNER")){
+                if (userRole.getRole().getRoleName().equals("OWNER")) {
                     isOwner = true;
                     break;
                 }
             }
-            if(isOwner){
+            if (isOwner) {
                 System.out.println(" IS OWNER: every request is ALLOWED!");
                 chain.doFilter(request, response);
                 return;
             }
 
-            String verb = request.getMethod();        // GET / POST / PUT / DELETE …
-            String path = request.getRequestURI();    // full request path
+            String verb = request.getMethod(); // GET / POST / PUT / DELETE ...
+            String path = request.getRequestURI(); // full request path
             System.out.println("Requested verb: " + verb);
             System.out.println("Requested path: " + path);
 
@@ -110,15 +154,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             System.out.printf("%-10s | %-50s%n", "VERB", "RESOURCE");
             System.out.println("-----------+----------------------------------------------------");
 
-
+            // Iterate over each permission and check if the user has access to the requested verb and resource
             for (UserRolePermissionDto p : allowed) {
                 System.out.printf("%-10s | %-50s%n", p.getVerb(), p.getResource());
-                if (verb.equalsIgnoreCase(p.getVerb())
-                        && pathMatcher.match(p.getResource(), path)) {
-
+                if (verb.equalsIgnoreCase(p.getVerb()) && pathMatcher.match(p.getResource(), path)) {
                     permitted = true;
 
-                    if (p.getTarget_role() != null) {          // ★ this triggers rewrite
+                    if (p.getTarget_role() != null) { // This triggers path rewrite
                         targetRoles.add(p.getTarget_role());
                     }
                 }
@@ -126,28 +168,26 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
             if (!permitted) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
-                System.out.println("The request is FORBIDEN.");
+                System.out.println("The request is FORBIDDEN.");
                 return;
             }
 
+            // Set the authentication context for the user
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            /* ────────────────────── PATH REWRITE ────────────────────── */
-            HttpServletRequest reqToUse = request;            // default: unchanged
+            // ────────────────────── PATH REWRITE ──────────────────────
+            HttpServletRequest reqToUse = request; // default: unchanged
 
-            if (!targetRoles.isEmpty()
-                    && request.getAttribute("rbRewriteDone") == null) {
-
-                // prepend "/role-based" once, keep query‑string intact
-                String original = request.getRequestURI();         // e.g. "/api/v1/tenant/user-tenant"
-                String suffix   = "/role-based";
+            if (!targetRoles.isEmpty() && request.getAttribute("rbRewriteDone") == null) {
+                // Prepend "/role-based" to the path once, keeping the query string intact
+                String original = request.getRequestURI(); // e.g., "/api/v1/tenant/user-tenant"
+                String suffix = "/role-based";
 
                 String rewritten = original.endsWith(suffix)
-                        ? original                                   // already suffixed → do nothing
-                        : original + suffix;                         // append once
-
+                        ? original // already suffixed → do nothing
+                        : original + suffix; // append once
 
                 reqToUse = new HttpServletRequestWrapper(request) {
                     @Override
@@ -166,11 +206,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     }
                 };
                 reqToUse.setAttribute("rbRewriteDone", Boolean.TRUE);
-                reqToUse.setAttribute("target_roles", targetRoles); // still pass the list
+                reqToUse.setAttribute("target_roles", targetRoles); // pass the list of target roles
             }
         }
-        System.out.println("Authorization Filter OUTSIDE");
-        chain.doFilter(request, response);   // continue
 
+        System.out.println("Authorization Filter OUTSIDE");
+        chain.doFilter(request, response); // Continue processing the filter chain
     }
 }

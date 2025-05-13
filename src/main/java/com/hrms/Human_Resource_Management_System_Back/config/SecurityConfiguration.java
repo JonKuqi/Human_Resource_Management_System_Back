@@ -85,6 +85,13 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    /**
+     * Registers the schema routing filter to be applied first.
+     * Used to dynamically route to the correct tenant schema based on the request.
+     *
+     * @param filter the schema routing filter
+     * @return the configured filter registration bean
+     */
     @Bean
     public FilterRegistrationBean<SchemaRoutingFilter> schemaRoutingFilterRegistration(SchemaRoutingFilter filter) {
         FilterRegistrationBean<SchemaRoutingFilter> registration = new FilterRegistrationBean<>(filter);
@@ -92,6 +99,13 @@ public class SecurityConfiguration {
         return registration;
     }
 
+    /**
+     * Registers the authorization filter to be applied after schema is resolved.
+     * Used to enforce role-based access control per tenant.
+     *
+     * @param filter the authorization filter
+     * @return the configured filter registration bean
+     */
     @Bean
     public FilterRegistrationBean<AuthorizationFilter> authorizationFilterRegistration(AuthorizationFilter filter) {
         FilterRegistrationBean<AuthorizationFilter> registration = new FilterRegistrationBean<>(filter);
@@ -99,6 +113,16 @@ public class SecurityConfiguration {
         return registration;
     }
 
+    /**
+     * Configures the CORS policy to allow cross-origin requests.
+     * <p>
+     * - Allows all origins.<br>
+     * - Supports common HTTP methods and headers.<br>
+     * - Enables credential sharing for cookies or auth headers.
+     * </p>
+     *
+     * @return the CORS configuration source
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
