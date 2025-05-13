@@ -2,14 +2,14 @@ package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "evaluation_template")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class EvaluationTemplate {
 
     @Id
@@ -19,13 +19,6 @@ public class EvaluationTemplate {
     @Column(nullable = false)
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by_id", nullable = false)
-    private UserTenant createdBy;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private Boolean isActive;
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EvaluationQuestion> questions;
 }
