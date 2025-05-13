@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS role_permission (
                                                role_id INT NOT NULL REFERENCES role(role_id)  ON DELETE CASCADE,
                                                permission_id INT NOT NULL REFERENCES public.tenant_permission(tenant_permission_id)  ON DELETE CASCADE,
                                                target_role_id INT NULL REFERENCES role(role_id)  ON DELETE CASCADE
+
 );
 
 -- Position Table
