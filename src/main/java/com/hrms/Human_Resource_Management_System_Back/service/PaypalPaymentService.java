@@ -42,7 +42,7 @@ public class PaypalPaymentService {
 
         if (plan.getPrice().compareTo(BigDecimal.ZERO) == 0) {
             createTenantSubscription(plan);
-            return new PaymentResponseDto("SUBSCRIPTION_ACTIVATED");
+            return new PaymentResponseDto("/tenant/subscription");
         }
 
         Amount amount = new Amount();
@@ -136,4 +136,9 @@ public class PaypalPaymentService {
 
         tenantSubscriptionRepository.save(tenantSubscription);
     }
+
+    public Optional<TenantSubscription> getActiveSubscription(String schema) {
+        return tenantSubscriptionRepository.findActiveSubscription(schema);
+    }
+
 }
