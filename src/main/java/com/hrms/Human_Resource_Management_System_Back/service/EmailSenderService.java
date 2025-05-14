@@ -68,6 +68,7 @@ public class EmailSenderService {
         });
     }
 
+
     /**
      * Shuts down the email sender's executor service.
      * <p>
@@ -75,6 +76,18 @@ public class EmailSenderService {
      * and releasing resources.
      * </p>
      */
+
+    public static void sendApplicationStatusEmail(String to, String applicantName, String jobTitle, String newStatus) {
+        String subject = "Application Status Update";
+        String body = String.format(
+                "Dear %s,\n\nYour application for the position \"%s\" has been updated.\n" +
+                        "Current Status: %s\n\nThank you for applying!\n\nBest regards,\nHR Team",
+                applicantName, jobTitle, newStatus
+        );
+
+        sendVerificationEmail(to, subject, body);
+    }
+
     public static void shutdown() {
         executor.shutdown();
     }

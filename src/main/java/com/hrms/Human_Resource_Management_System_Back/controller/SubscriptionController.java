@@ -6,10 +6,14 @@ import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
 import com.hrms.Human_Resource_Management_System_Back.service.PaypalPaymentService;
 import com.hrms.Human_Resource_Management_System_Back.service.SubscriptionService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,28 +29,16 @@ public class SubscriptionController extends BaseController<Subscription, Integer
         return subscriptionService;
     }
 
-    @GetMapping("/plans")
-    public ResponseEntity<List<Subscription>> getPlans() {
-        return ResponseEntity.ok(subscriptionService.getAllPlans());
-    }
-
     @GetMapping("/payments/success")
-    public ResponseEntity<String> executePayment(
-            @RequestParam("paymentId") String paymentId,
-            @RequestParam("PayerID") String payerId) {
-
+    public ResponseEntity<Void> executePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId, @RequestParam("token") String token) {
         try {
             paypalPaymentService.executePayment(paymentId, payerId);
-            return ResponseEntity.ok("Payment successful and subscription activated.");
-
+            URI redirectUri = URI.create("http://localhost:3000/tenant/subscription?status=success");
+            return ResponseEntity.status(HttpStatus.FOUND).location(redirectUri).build();  // Redirect back to app
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(403).body("Payment failed: " + e.getMessage());
+            return ResponseEntity.status(500).build();
         }
     }
 
-    @GetMapping("/payments/cancel")
-    public ResponseEntity<String> cancelPayment() {
-        return ResponseEntity.ok("Subscription process was cancelled by the user.");
-    }
+
 }
