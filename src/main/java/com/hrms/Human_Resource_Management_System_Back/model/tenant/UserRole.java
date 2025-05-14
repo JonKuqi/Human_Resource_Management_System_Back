@@ -6,6 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a user role entity in the system.
+ * <p>
+ * - userRoleId: The unique identifier for the user role.
+ * - userTenant: The user tenant associated with the role.
+ * - role: The role assigned to the user tenant.
+ * </p>
+ */
+
 @Entity
 @Table(name = "user_role_table",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_tenant_id", "role_id"}))

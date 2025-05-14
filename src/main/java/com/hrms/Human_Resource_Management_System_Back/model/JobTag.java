@@ -4,6 +4,14 @@ package com.hrms.Human_Resource_Management_System_Back.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Represents a job tag entity in the public schema of the system.
+ * <p>
+ * - jobTagId: The unique identifier for the job tag.
+ * - jobListing: The job listing associated with the tag.
+ * - tagName: The name of the tag.
+ * </p>
+ */
 @Entity
 @Table(name = "job_tag", schema = "public")
 @Data

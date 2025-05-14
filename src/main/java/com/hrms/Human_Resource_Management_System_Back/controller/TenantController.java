@@ -14,20 +14,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for managing tenant operations such as registration and onboarding.
+ * <p>
+ * This controller handles tenant-related endpoints, including tenant registration, email verification,
+ * and owner setup during the onboarding process.
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/v1/public/tenant")
 public class TenantController extends BaseController<Tenant, Integer> {
 
-    @Override
-    protected BaseService<Tenant, Integer> getService() {
-        return tenantService;
-    }
-
+    /**
+     * The service responsible for handling tenant business logic.
+     */
     private final TenantService tenantService;
 
+    /**
+     * The service responsible for managing tenant onboarding operations.
+     */
     private final TenantOnboardingService onboardingService;
 
+    /**
+     * The frontend URL, injected from application properties.
+     */
     private String frontendUrl;
+
+    /**
+     * Constructor for initializing the tenant controller with necessary services.
+     *
+     * @param tenantService the service for managing tenants
+     * @param onboardingService the service for managing tenant onboarding
+     * @param frontendUrl the URL of the frontend, injected from the application properties
+     */
     public TenantController(
             TenantService tenantService, TenantOnboardingService onboardingService,
             @Value("${app.frontend.url}") String frontendUrl
@@ -37,21 +56,45 @@ public class TenantController extends BaseController<Tenant, Integer> {
         this.frontendUrl      = frontendUrl;
     }
 
-    /** Step 1: Register tenant and send verification email */
+    /**
+     * Registers a new tenant and sends a verification email.
+     * <p>
+     * This method registers a tenant based on the provided registration request and sends a verification email
+     * to the tenant's email address. The registration includes setting up basic tenant information.
+     * </p>
+     *
+     * @param rq the registration request containing tenant details
+     * @return a {@link ResponseEntity} with a status of ACCEPTED if the tenant registration is successful
+     */
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody TenantRegistrationRequest rq) {
-  ;
         onboardingService.registerTenant(rq);
         return ResponseEntity.accepted().build();
     }
 
-    /** Step 1b: Verify email link & redirect to owner‑setup page */
+    /**
+     * Verifies the email link and redirects the user to the owner setup page.
+     * <p>
+     * This method handles the verification of the tenant owner's email. After verification, it proceeds
+     * to create the owner and redirects them to the setup page for configuring the tenant's owner details.
+     * </p>
+     *
+     * @param rq the owner creation request containing necessary information for setting up the owner
+     * @return an {@link AuthenticationResponse} containing authentication details after successful onboarding
+     */
     @PostMapping("/onboard")
     public ResponseEntity<AuthenticationResponse> onboard(@RequestBody OwnerCreationRequest rq) {
         AuthenticationResponse res = onboardingService.createOwnerAfterVerification(rq);
         return ResponseEntity.ok(res);
     }
 
-
-
+    /**
+     * Overrides {@link BaseController#getService()} to return the tenant service.
+     *
+     * @return the tenant service
+     */
+    @Override
+    protected BaseService<Tenant, Integer> getService() {
+        return tenantService;
+    }
 }

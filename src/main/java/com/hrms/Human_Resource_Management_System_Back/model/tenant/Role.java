@@ -8,6 +8,15 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a role entity in the system.
+ * <p>
+ * - roleId: The unique identifier for the role.
+ * - roleName: The name of the role.
+ * - description: The description of the role.
+ * - createdAt: The timestamp when the role was created.
+ * </p>
+ */
 @Entity
 @Table(name = "role")
 @Data

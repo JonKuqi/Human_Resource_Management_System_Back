@@ -18,13 +18,37 @@ import java.io.IOException;
  * so Hibernate can pick the right schema.
  */
 
+/**
+ * A filter that routes requests to the appropriate tenant schema based on the JWT token.
+ * <p>
+ * This filter extracts the "tenant" claim from the JWT token and sets the tenant context for each request.
+ * It ensures that subsequent parts of the application can access the tenant-specific schema.
+ * </p>
+ */
 @Component
 @Order(1)
 @RequiredArgsConstructor
 public class SchemaRoutingFilter extends OncePerRequestFilter {
 
+    /**
+     * The service responsible for extracting claims from the JWT token.
+     */
     private final JwtService jwtService;
 
+    /**
+     * This method performs the filtering logic, which is executed for every HTTP request.
+     * <p>
+     * It extracts the JWT token from the "Authorization" header, retrieves the "tenant" claim,
+     * and sets the tenant context based on the claim value. The tenant context is then available
+     * for subsequent parts of the application to determine the schema to use for database queries.
+     * </p>
+     *
+     * @param request the incoming HTTP request
+     * @param response the HTTP response
+     * @param chain the filter chain to pass the request and response
+     * @throws ServletException if the request processing fails
+     * @throws IOException if there is an error during I/O operations
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -33,24 +57,29 @@ public class SchemaRoutingFilter extends OncePerRequestFilter {
 
         try {
             System.out.println("______________ INSIDE Schema Routing FILTER _______________");
+
+            // Extract the Authorization header to retrieve the JWT token
             String auth = request.getHeader("Authorization");
             if (auth != null && auth.startsWith("Bearer ")) {
-                String token = auth.substring(7);
+                String token = auth.substring(7); // Remove "Bearer " prefix to get the actual token
 
-
-                // read the "tenant" claim directly; no need to wait for authentication
+                // Extract the "tenant" claim from the JWT token
                 String schema = (String) jwtService.extractClaim(token, c -> c.get("tenant"));
-                System.out.println("Schema is : "+schema);
-                if (schema != null && !schema.isBlank()) {
-                    System.out.println("FILTER IS HERE -> tenant = {}"+ schema);
-                    TenantCtx.setTenant(schema);
-                }
+                System.out.println("Schema is : " + schema);
 
+                // If a valid tenant schema is found, set it in the tenant context
+                if (schema != null && !schema.isBlank()) {
+                    System.out.println("FILTER IS HERE -> tenant = {}" + schema);
+                    TenantCtx.setTenant(schema);  // Set the tenant schema in the context
+                }
             }
-            chain.doFilter(request, response);   // continue
+
+            // Continue with the filter chain to process the request
+            chain.doFilter(request, response);
 
         } finally {
-            TenantCtx.clear();                // always clean up
+            // Always clean up the tenant context after the request is processed
+            TenantCtx.clear();
         }
     }
 }

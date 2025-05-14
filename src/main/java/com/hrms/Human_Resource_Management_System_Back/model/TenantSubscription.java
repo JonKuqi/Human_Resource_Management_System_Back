@@ -1,11 +1,26 @@
 package com.hrms.Human_Resource_Management_System_Back.model;
 
-import com.hrms.Human_Resource_Management_System_Back.model.types.SubscriptionStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * Represents a tenant subscription entity in the public schema of the system.
+ * <p>
+ * - tenantSubscriptionId: The unique identifier for the tenant subscription.
+ * - tenant: The tenant associated with the subscription.
+ * - subscription: The subscription plan associated with the tenant.
+ * - startDate: The start date of the subscription.
+ * - endDate: The end date of the subscription.
+ * - status: The status of the subscription (e.g., active, expired).
+ * - createdAt: The date and time when the tenant subscription was created.
+ * </p>
+ */
 @Entity
 @Table(name = "tenant_subscription", schema = "public")
 @Data

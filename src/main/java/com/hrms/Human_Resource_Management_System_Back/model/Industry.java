@@ -3,7 +3,13 @@ package com.hrms.Human_Resource_Management_System_Back.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+/**
+ * Represents an industry entity in the system.
+ * <p>
+ * - industryId: The unique identifier for the industry.
+ * - name: The name of the industry.
+ * </p>
+ */
 @Entity
 @Table(name = "industry", schema = "public")
 @Data

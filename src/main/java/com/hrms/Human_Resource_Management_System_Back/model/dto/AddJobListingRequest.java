@@ -19,7 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 public class AddJobListingRequest {
 
-
     private String jobTitle;
     private Industry industry;
     private String customIndustry;
@@ -31,9 +30,5 @@ public class AddJobListingRequest {
     private BigDecimal salaryTo;
     private LocalDate validUntil;
     private List<String> tags;
-
-
-
-
 
 }

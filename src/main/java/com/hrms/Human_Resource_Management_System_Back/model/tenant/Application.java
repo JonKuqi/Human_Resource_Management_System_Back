@@ -14,6 +14,29 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * Represents an application entity in the system.
+ * <p>
+ * - applicationId: The unique identifier for the application.
+ * - jobListing: The job listing the application is associated with.
+ * - userGeneral: The user general entity that applied for the job.
+ * - applicantName: The name of the applicant.
+ * - applicantEmail: The email address of the applicant.
+ * - applicantGender: The gender of the applicant.
+ * - applicantBirthDate: The birth date of the applicant.
+ * - applicantPhone: The phone number of the applicant.
+ * - experience: The applicant's experience related to the job.
+ * - applicantComment: Any comments made by the applicant.
+ * - cv: The CV of the applicant.
+ * - portfolio: The portfolio of the applicant, if available.
+ * - timeOfApplication: The time when the application was submitted.
+ * - hrComment: Comments made by the HR department.
+ * - status: The current status of the application.
+ * - createdAt: The timestamp when the application was created.
+ * - updatedAt: The timestamp when the application was last updated.
+ * </p>
+ */
+
 @Entity
 @Table(name = "application")
 @Data

@@ -11,10 +11,22 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for managing {@link Contract} entities.
+ * <p>
+ * This repository extends {@link BaseUserSpecificRepository} and provides methods for querying and modifying contract data,
+ * including role-based access control (RBAC).
+ * </p>
+ */
 @Repository
-public interface ContractRepository
-        extends BaseUserSpecificRepository<Contract, Integer> {
+public interface ContractRepository extends BaseUserSpecificRepository<Contract, Integer> {
 
+    /**
+     * Retrieves all contracts where the user has **every** role specified in the provided list.
+     *
+     * @param roles the list of roles to check
+     * @return a list of {@link Contract} entities that match the specified roles
+     */
     @Query("""
        SELECT c
        FROM Contract c
@@ -26,6 +38,13 @@ public interface ContractRepository
     """)
     List<Contract> findAllRole(@Param("roles") List<String> roles);
 
+    /**
+     * Retrieves a contract by its ID, but only if the user has **every** role specified in the provided list.
+     *
+     * @param id    the ID of the contract to retrieve
+     * @param roles the list of roles the user must have to access the contract
+     * @return an {@link Optional} containing the {@link Contract} if found and authorized
+     */
     @Query("""
        SELECT c
        FROM Contract c
@@ -39,6 +58,12 @@ public interface ContractRepository
     Optional<Contract> findByIdRole(@Param("id") Integer id,
                                     @Param("roles") List<String> roles);
 
+    /**
+     * Deletes a contract by its ID, but only if the user has **every** role specified in the provided list.
+     *
+     * @param id    the ID of the contract to delete
+     * @param roles the list of roles the user must have to delete the contract
+     */
     @Override
     @Modifying
     @Transactional

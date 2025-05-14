@@ -8,6 +8,16 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a department entity in the system.
+ * <p>
+ * - departmentId: The unique identifier for the department.
+ * - name: The name of the department.
+ * - description: A description of the department.
+ * - createdAt: The timestamp when the department was created.
+ * </p>
+ */
+
 @Entity
 @Table(name = "department")
 @Data
