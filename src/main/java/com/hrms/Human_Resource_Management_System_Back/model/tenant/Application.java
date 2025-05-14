@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
+import com.hrms.Human_Resource_Management_System_Back.model.Document;
 import com.hrms.Human_Resource_Management_System_Back.model.JobListing;
 import com.hrms.Human_Resource_Management_System_Back.model.UserGeneral;
 import jakarta.persistence.*;
@@ -54,10 +55,9 @@ public class Application {
     @Column(name = "applicant_comment", columnDefinition = "TEXT")
     private String applicantComment;
 
-    @Lob
-    @JdbcTypeCode(SqlTypes.BINARY)
-    @Column(name = "cv", nullable = false)
-    private byte[] cv;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "cv_document_id")
+    private Document cv;
 
     @Lob
     @JdbcTypeCode(SqlTypes.BINARY)
