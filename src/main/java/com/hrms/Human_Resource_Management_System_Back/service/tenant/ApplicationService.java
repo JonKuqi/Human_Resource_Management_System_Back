@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ApplicationService extends BaseService<Application, Integer> {
     private final ApplicationRepository repo;
-    private final EmailSenderService emailSenderService;
 
 
     @Override
