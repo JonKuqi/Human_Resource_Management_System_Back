@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/public/application")
+@RequestMapping("/api/v1/tenant/application")
 @AllArgsConstructor
 public class ApplicationController extends BaseController<Application, Integer> {
     private final ApplicationService svc;

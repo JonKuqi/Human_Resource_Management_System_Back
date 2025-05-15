@@ -1,6 +1,5 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
-import com.hrms.Human_Resource_Management_System_Back.model.Document;
 import com.hrms.Human_Resource_Management_System_Back.model.JobListing;
 import com.hrms.Human_Resource_Management_System_Back.model.UserGeneral;
 import jakarta.persistence.*;

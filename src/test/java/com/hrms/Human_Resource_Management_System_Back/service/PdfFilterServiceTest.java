@@ -1,6 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.service;
 
-import com.hrms.Human_Resource_Management_System_Back.model.Document;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.Document;
 import com.hrms.Human_Resource_Management_System_Back.repository.DocumentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
