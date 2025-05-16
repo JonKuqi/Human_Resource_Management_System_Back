@@ -1,6 +1,7 @@
 package com.hrms.Human_Resource_Management_System_Back.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.hrms.Human_Resource_Management_System_Back.model.UserApplication;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.UserApplicationDto;
@@ -31,12 +32,17 @@ public class UserApplicationController extends BaseController<UserApplication, I
 
     @PostMapping(value = "/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> apply(
-            @RequestPart("data") UserApplicationDto dto,
+            @RequestPart("data") String dataJson,  // Accept raw JSON string
             @RequestPart("cv") MultipartFile cvFile
     ) throws IOException {
+        // Convert JSON manually
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserApplicationDto dto = objectMapper.readValue(dataJson, UserApplicationDto.class);
+
         service.apply(dto, cvFile);
         return ResponseEntity.ok().build();
     }
+
 
 
 

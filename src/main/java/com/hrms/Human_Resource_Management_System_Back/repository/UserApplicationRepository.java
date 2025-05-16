@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserApplicationRepository extends BaseRepository<UserApplication,Integer>{
 
+    boolean existsByUser_UserIdAndJobListing_JobListingId(Integer userId, Integer jobListingId);
+
+
 }

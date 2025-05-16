@@ -24,9 +24,11 @@ public class Document {
     @Column(name = "content_type", nullable = false, length = 100)
     private String contentType;
 
-    @Lob
+//    @Lob
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "data", nullable = false)
     private byte[] data;
+
 
 
 }

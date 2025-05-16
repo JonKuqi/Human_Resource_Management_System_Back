@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.document (
+CREATE TABLE IF NOT EXISTS document (
     document_id SERIAL PRIMARY KEY,
     file_name VARCHAR(255) NOT NULL,
     content_type VARCHAR(100) NOT NULL,
