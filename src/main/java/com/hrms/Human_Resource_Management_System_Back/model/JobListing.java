@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -77,6 +78,7 @@ public class JobListing {
     @Column(name = "valid_until", nullable = false)
     private LocalDate validUntil;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }

@@ -13,6 +13,14 @@ CREATE TABLE IF NOT EXISTS user_tenant (
                                            created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS document (
+    document_id SERIAL PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    content_type VARCHAR(100) NOT NULL,
+    data BYTEA NOT NULL
+);
+
+
 -- Application Table
 CREATE TABLE IF NOT EXISTS application (
                                            application_id SERIAL PRIMARY KEY,
@@ -24,7 +32,7 @@ CREATE TABLE IF NOT EXISTS application (
                                            applicant_phone VARCHAR(20) NOT NULL,
                                            experience TEXT,
                                            applicant_comment TEXT,
-                                           cv BYTEA,
+                                           cv_document_id INT REFERENCES document(document_id)  ON DELETE CASCADE,
                                            portfolio BYTEA,
                                            time_of_application TIMESTAMP DEFAULT NOW() NOT NULL,
                                            hr_comment TEXT,
@@ -136,4 +144,6 @@ CREATE TABLE IF NOT EXISTS performance_evaluation (
                                                       created_at TIMESTAMP DEFAULT NOW() NOT NULL,
                                                       CHECK (from_user_tenant_id <> to_user_tenant_id)
 );
+
+
 

@@ -1,4 +1,4 @@
-package com.hrms.Human_Resource_Management_System_Back.model;
+package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,7 +6,7 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "document", schema = "public")
+@Table(name = "document")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,9 +24,11 @@ public class Document {
     @Column(name = "content_type", nullable = false, length = 100)
     private String contentType;
 
-    @Lob
+//    @Lob
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "data", nullable = false)
     private byte[] data;
+
 
 
 }

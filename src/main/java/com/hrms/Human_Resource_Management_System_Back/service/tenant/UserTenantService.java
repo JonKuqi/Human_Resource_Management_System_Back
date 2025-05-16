@@ -70,6 +70,7 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
      * @param rq the registration request containing user and address information
      * @return an {@link AuthenticationResponse} containing the generated JWT token
      */
+
     @Transactional
     public AuthenticationResponse register(RegisterTenantUserRequest rq) {
         String schema = TenantCtx.getTenant();
