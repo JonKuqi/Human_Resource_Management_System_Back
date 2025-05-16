@@ -57,9 +57,9 @@ public class Contract {
     @Column(name = "salary", nullable = false, precision = 12, scale = 2)
     private BigDecimal salary;
 
-    @Column(name = "terms", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "terms", columnDefinition = "TEXT", nullable = true)
     private String terms;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at",nullable = false)
     private LocalDateTime createdAt;
 }

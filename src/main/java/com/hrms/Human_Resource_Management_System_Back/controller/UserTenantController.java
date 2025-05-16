@@ -1,6 +1,7 @@
 package com.hrms.Human_Resource_Management_System_Back.controller;
 
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
+import com.hrms.Human_Resource_Management_System_Back.model.dto.CreateEmployeeRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterTenantUserRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserTenant;
 import com.hrms.Human_Resource_Management_System_Back.service.tenant.UserTenantService;
@@ -41,7 +42,7 @@ public class UserTenantController extends BaseUserSpecificController<UserTenant,
     }
 
     /**
-     * Registers a new user as a tenant.
+     * Registers a new user as a User Tenant Owner.
      * <p>
      * This method handles the registration of a new user within the context of a tenant.
      * Upon successful registration, an authentication response containing necessary tokens is returned.
@@ -54,6 +55,23 @@ public class UserTenantController extends BaseUserSpecificController<UserTenant,
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterTenantUserRequest rq) {
         return ResponseEntity.ok(service.register(rq));
+    }
+
+    /**
+     * Creating a new employee within the current tenant by the User Tenant Owner.
+     * <p>
+     * Accepts a JSON request body with employee details, including personal information,
+     * address, department, position, and contract data. Delegates the creation logic
+     * to {@link UserTenantService#createEmployee(CreateEmployeeRequest)}.
+     * </p>
+     *
+     * @param rq the request payload containing employee information
+     * @return {@link ResponseEntity} with status 200 OK upon success
+     */
+    @PostMapping("/employees")
+    public ResponseEntity<Void> createEmployee(@RequestBody CreateEmployeeRequest rq) {
+        service.createEmployee(rq);
+        return ResponseEntity.ok().build();
     }
 
     /**
