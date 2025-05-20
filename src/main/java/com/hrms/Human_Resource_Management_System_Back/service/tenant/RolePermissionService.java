@@ -10,6 +10,8 @@ import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RolePerm
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RoleRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,8 +74,10 @@ public class RolePermissionService extends BaseService<RolePermission, Integer> 
      * @return a list of {@link UserRolePermissionDto} representing the filtered and processed permissions for the user tenant
      */
     @Transactional
+    @Cacheable(value = "user-role-permissions", key = "#id")
     public List<UserRolePermissionDto> getUserRolePermissions(Integer id) {
         List<UserRolePermissionDto> list = repo.findScopedPermissionsByUserTenantId(id);
+        System.out.println("KALTRINAAAAA?????????!!!!!!!!!");
 
         HashMap<String, UserRolePermissionDto> hashMap = new HashMap<>();
 
@@ -130,6 +134,7 @@ public class RolePermissionService extends BaseService<RolePermission, Integer> 
      * @param roleId the role ID to retrieve permissions for
      * @return a list of {@link RolePermission} associated with the given role ID
      */
+    @Cacheable(value = "role-permissions", key = "#roleId")
     public List<RolePermission> findByRoleId(Integer roleId) {
         return repo.findAllByRole_RoleId(roleId);
     }
@@ -145,6 +150,7 @@ public class RolePermissionService extends BaseService<RolePermission, Integer> 
      * @param req the request containing the new permission and target role IDs
      */
     @Transactional
+    @CacheEvict(value = "user-role-permissions", key = "#roleId")
     public void replacePermissions(Integer roleId, RolePermissionReplaceRequest req) {
         repo.deleteByRoleId(roleId);   // JPQL @Modifying DELETE, inside Tx
 
