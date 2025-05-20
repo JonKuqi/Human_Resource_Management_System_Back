@@ -80,7 +80,8 @@ public class SecurityConfiguration {
                                 "/api/v1/public/industry",
                                 //"/api/v1/public/user/filter",
                                 "/swagger-ui/*",
-                                "/v3/api-docs/**").permitAll()
+                                "/v3/api-docs/**",
+                                "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
