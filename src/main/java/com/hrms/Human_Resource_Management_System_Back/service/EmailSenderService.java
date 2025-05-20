@@ -24,7 +24,7 @@ public class EmailSenderService {
     /**
      * A thread pool for sending emails asynchronously. It allows up to 5 concurrent threads for email sending.
      */
-    private static final ExecutorService executor = Executors.newFixedThreadPool(5);
+    private static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     /**
      * Initializes the {@link JavaMailSender} to be used for sending emails.
@@ -87,8 +87,46 @@ public class EmailSenderService {
 
         sendVerificationEmail(to, subject, body);
     }
+    /**
+     * Sends a simple email asynchronously.
+     * <p>
+     * This method submits the email sending task to the thread pool for asynchronous execution. It creates
+     * a {@link SimpleMailMessage}, sets the necessary fields (recipient, subject, body, and sender), and then
+     * sends the email using the {@link JavaMailSender}.
+     * </p>
+     *
+     * @param to      the recipient email address
+     * @param subject the subject of the email
+     * @param body    the body/content of the email
+     */
+
+    public static void sendSimpleEmail(String to, String subject, String body) {
+        executor.submit(() -> {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(to);
+                message.setSubject(subject);
+                message.setText(body);
+                message.setFrom("kucijon@gmail.com");
+                mailSender.send(message);
+                System.out.println("Email sent to: " + to);
+            } catch (Exception e) {
+                System.err.println("Failed to send email to: " + to);
+                e.printStackTrace();
+            }
+        });
+    }
+    /**
+     * Shuts down the email sender's executor service.
+     * <p>
+     * This method gracefully shuts down the executor service, stopping any pending email sending tasks
+     * and releasing resources.
+     * </p>
+     */
 
     public static void shutdown() {
         executor.shutdown();
     }
+
+
 }

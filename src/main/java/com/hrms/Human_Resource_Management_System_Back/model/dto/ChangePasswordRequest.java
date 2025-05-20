@@ -13,4 +13,11 @@ import lombok.Data;
 public class ChangePasswordRequest {
     private String currentPassword;
     private String newPassword;   // confirm is handled on the front-end
+
+    public ChangePasswordRequest(String wrongPassword, String newPassword123) {
+    }
+
+    public ChangePasswordRequest() {
+
+    }
 }
