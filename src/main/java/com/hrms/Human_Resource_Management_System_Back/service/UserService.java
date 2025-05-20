@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.service;
 
+import com.hrms.Human_Resource_Management_System_Back.exception.EmailNotVerifiedException;
 import com.hrms.Human_Resource_Management_System_Back.model.Tenant;
 import com.hrms.Human_Resource_Management_System_Back.model.User;
 import com.hrms.Human_Resource_Management_System_Back.model.UserGeneral;
@@ -78,6 +79,7 @@ public class UserService extends BaseService<User, Integer> {
      */
     @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        try{
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -97,7 +99,7 @@ public class UserService extends BaseService<User, Integer> {
             );
 
             if (!ug.isVerified()) {
-                throw new BadCredentialsException("Email not verified.");
+                throw new EmailNotVerifiedException("Email not verified.");
             }
             claims.put("user_general_id", ug.getUserGeneralId());
         }
@@ -128,6 +130,13 @@ public class UserService extends BaseService<User, Integer> {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+        } catch (EmailNotVerifiedException e) {
+            // Re-throw to preserve the specific exception type
+            throw e;
+        } catch (BadCredentialsException e) {
+            // Keep handling other authentication failures
+            throw e;
+        }
     }
 
     /**
