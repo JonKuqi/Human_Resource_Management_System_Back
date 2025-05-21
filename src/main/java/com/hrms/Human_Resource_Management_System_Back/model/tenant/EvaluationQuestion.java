@@ -1,4 +1,5 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +19,9 @@ public class EvaluationQuestion {
     private String questionText;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "template_id", nullable = false)
-    private EvaluationTemplate template;
+    @JoinColumn(name = "form_id")
+    @JsonBackReference
+    private EvaluationForm form;
+
+
 }
