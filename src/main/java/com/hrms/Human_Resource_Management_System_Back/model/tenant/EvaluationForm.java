@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,21 +20,20 @@ public class EvaluationForm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // Template-i mbi të cilin bazohet forma
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "template_id", nullable = false)
-    private EvaluationTemplate template;
+    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<EvaluationQuestion> questions;
 
-    // Kush po e vlerëson (from)
+
     @Column(name = "from_user_tenant_id", nullable = false)
     private Integer fromUserTenantId;
 
-    // Kush po vlerësohet (to)
+
     @Column(name = "to_user_tenant_id", nullable = false)
     private Integer toUserTenantId;
 
     @Column(nullable = false)
-    private String status; // e.g. PENDING, SUBMITTED
+    private String status;
 
     @CreationTimestamp
     @Column(updatable = false)
