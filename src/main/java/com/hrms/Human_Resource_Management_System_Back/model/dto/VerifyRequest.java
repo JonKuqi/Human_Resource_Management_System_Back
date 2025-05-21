@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -10,7 +11,12 @@ import lombok.Data;
  * </p>
  */
 @Data
+@AllArgsConstructor
 public class VerifyRequest {
     private String email;
     private String code;
+
+    public VerifyRequest() {
+
+    }
 }

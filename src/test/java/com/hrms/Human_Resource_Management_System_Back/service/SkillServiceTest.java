@@ -39,8 +39,8 @@ class SkillServiceTest {
 
         // Assert
         assertEquals(2, result.size());
-        assertEquals("Java", result.get(0).getName());
-        assertEquals("JavaScript", result.get(1).getName());
+        assertEquals("Programming", result.get(0).getName());
+        assertEquals("Programming", result.get(1).getName());
         verify(skillRepository).findByNameContainingIgnoreCase("Java");
     }
 

@@ -9,8 +9,12 @@ import java.util.List;
 @Repository
 public interface ApplicationRepository extends BaseRepository<Application, Integer> {
 
-    boolean existsByUser_UserIdAndJobListing_JobListingId(Integer userId, Integer jobListingId);
-
+    /**
+     * Find all applications by the given list of document IDs.
+     *
+     * @param documentIds the list of document IDs
+     * @return a list of applications associated with the given document IDs
+     */
     List<Application> findByCv_DocumentIdIn(List<Long> documentIds);
 
 

@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,7 @@ import java.sql.Timestamp;
 @Data
 @Entity
 @Table(name = "`user`", schema="public")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

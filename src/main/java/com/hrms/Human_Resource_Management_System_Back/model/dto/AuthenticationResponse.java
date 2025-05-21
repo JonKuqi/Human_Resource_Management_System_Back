@@ -19,4 +19,8 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
     private String token;
     private boolean verified;
+
+    public AuthenticationResponse(String s) {
+        this.token = s;
+    }
 }
