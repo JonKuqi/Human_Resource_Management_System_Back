@@ -23,75 +23,68 @@ public class LeaveRequestService extends BaseService<LeaveRequest, Integer> {
     }
     private final NotificationService notificationService;
 
-    @Transactional
-    public void approveLeaveRequest(Integer id) {
-        LeaveRequest leave = getRepository().findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Leave request not found with id: " + id));
-
-        if (!"PENDING".equalsIgnoreCase(leave.getStatus())) {
-            throw new IllegalStateException("Leave request is not pending.");
-        }
-
-        leave.setStatus("APPROVED");
-        getRepository().save(leave);
-        Notification notification = Notification.builder()
-                .title("Leave Request Approved")
-                .description("Your leave request from " + leave.getStartDate() + " to " + leave.getEndDate() + " was approved.")
-                .userTenant(leave.getUserTenant())
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusDays(30))
-                .build();
-
-        notificationService.save(notification);
-    }
-
-
-    @Transactional
-    public void rejectLeaveRequest(Integer id) {
-        LeaveRequest leave = getRepository().findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Leave request not found with id: " + id));
-
-        if (!"PENDING".equalsIgnoreCase(leave.getStatus())) {
-            throw new IllegalStateException("Leave request is not pending.");
-        }
-
-        leave.setStatus("REJECTED");
-        getRepository().save(leave);
-        Notification notification = Notification.builder()
-                .title("Leave Request Rejected")
-                .description("Your leave request from " + leave.getStartDate() + " to " + leave.getEndDate() + " was rejected.")
-                .userTenant(leave.getUserTenant())
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusDays(30))
-                .build();
-
-        notificationService.save(notification);
-    }
-
-
     @Override
     public LeaveRequest save(LeaveRequest leaveRequest) {
-        Integer userId = leaveRequest.getUserTenant().getUserTenantId();
+        boolean isNew = (leaveRequest.getLeaveRequestId() == null);
+        LeaveRequest existing = null;
 
-        boolean conflict = repo.existsByUserTenantUserTenantIdAndDateOverlap(
-                userId,
-                leaveRequest.getStartDate(),
-                leaveRequest.getEndDate()
-        );
-
-        if (conflict) {
-            throw new IllegalArgumentException("Leave request conflicts with existing dates.");
+        if (!isNew) {
+            existing = repo.findById(leaveRequest.getLeaveRequestId()).orElse(null);
         }
 
-        if (leaveRequest.getStatus() == null || leaveRequest.getStatus().isBlank()) {
-            leaveRequest.setStatus("PENDING");
+        if (isNew) {
+            // Kontroll për konflikt
+            Integer userId = leaveRequest.getUserTenant().getUserTenantId();
+
+            boolean conflict = repo.existsByUserTenantUserTenantIdAndDateOverlap(
+                    userId,
+                    leaveRequest.getStartDate(),
+                    leaveRequest.getEndDate()
+            );
+
+            if (conflict) {
+                throw new IllegalArgumentException("Leave request conflicts with existing dates.");
+            }
+
+            // Vendos status në PENDING nëse nuk është dhënë
+            if (leaveRequest.getStatus() == null || leaveRequest.getStatus().isBlank()) {
+                leaveRequest.setStatus("PENDING");
+            }
+
+            // Vendos kohën e krijimit nëse nuk është dhënë
+            if (leaveRequest.getCreatedAt() == null) {
+                leaveRequest.setCreatedAt(LocalDateTime.now());
+            }
+
+            // Vendos validUntil në fund të pushimit
         }
 
-        if (leaveRequest.getCreatedAt() == null) {
-            leaveRequest.setCreatedAt(LocalDateTime.now());
-        }
+        LeaveRequest saved = super.save(leaveRequest);
 
-        return super.save(leaveRequest);
+        // Logjika e notifikimeve për status
+//        if (!isNew && existing != null && !leaveRequest.getStatus().equalsIgnoreCase(existing.getStatus())) {
+//            if ("APPROVED".equalsIgnoreCase(leaveRequest.getStatus())) {
+//                Notification notification = Notification.builder()
+//                        .title("Leave Request Approved")
+//                        .description("Your leave request from " + leaveRequest.getStartDate() + " to " + leaveRequest.getEndDate() + " was approved.")
+//                        .userTenant(leaveRequest.getUserTenant())
+//                        .createdAt(LocalDateTime.now())
+//                        .expiresAt(LocalDateTime.now().plusDays(30))
+//                        .build();
+//                notificationService.save(notification);
+//            } else if ("REJECTED".equalsIgnoreCase(leaveRequest.getStatus())) {
+//                Notification notification = Notification.builder()
+//                        .title("Leave Request Rejected")
+//                        .description("Your leave request from " + leaveRequest.getStartDate() + " to " + leaveRequest.getEndDate() + " was rejected.")
+//                        .userTenant(leaveRequest.getUserTenant())
+//                        .createdAt(LocalDateTime.now())
+//                        .expiresAt(LocalDateTime.now().plusDays(30))
+//                        .build();
+//                notificationService.save(notification);
+//            }
+//        }
+
+        return saved;
     }
 
 
