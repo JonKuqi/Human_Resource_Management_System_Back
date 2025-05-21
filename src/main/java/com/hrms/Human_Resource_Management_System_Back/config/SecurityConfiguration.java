@@ -77,6 +77,7 @@ public class SecurityConfiguration {
                                 "/api/v1/public/subscriptions/**",
                                 "/api/v1/public/permission",
                                 "/api/v1/public/job-listing",
+                                "/api/v1/public/job-listing/**",
                                 "/api/v1/public/industry",
                                 //"/api/v1/public/user/filter",
                                 "/swagger-ui/*",
