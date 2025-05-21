@@ -15,4 +15,6 @@ public class UserApplicationDto {
     Integer userID;
     Integer jobListingID;
     String applicantComment;
+
+
 }
