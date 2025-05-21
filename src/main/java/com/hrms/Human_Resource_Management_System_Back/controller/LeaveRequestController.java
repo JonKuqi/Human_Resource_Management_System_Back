@@ -25,19 +25,19 @@ public class LeaveRequestController extends BaseController<LeaveRequest, Integer
       //  return svc;
     //}
 
-    @PutMapping("/{id}/approve")
-    //@PreAuthorize("hasRole('HR') or hasRole('MANAGER')")
-    public ResponseEntity<String> approve(@PathVariable Integer id) {
-        svc.approveLeaveRequest(id);
-        return ResponseEntity.ok("Leave request approved successfully.");
-    }
-
-    @PutMapping("/{id}/reject")
-   // @PreAuthorize("hasRole('HR') or hasRole('MANAGER')")
-    public ResponseEntity<String> reject(@PathVariable Integer id) {
-        svc.rejectLeaveRequest(id);
-        return ResponseEntity.ok("Leave request rejected successfully.");
-    }
+//    @PutMapping("/{id}/approve")
+//    //@PreAuthorize("hasRole('HR') or hasRole('MANAGER')")
+//    public ResponseEntity<String> approve(@PathVariable Integer id) {
+//        svc.approveLeaveRequest(id);
+//        return ResponseEntity.ok("Leave request approved successfully.");
+//    }
+//
+//    @PutMapping("/{id}/reject")
+//   // @PreAuthorize("hasRole('HR') or hasRole('MANAGER')")
+//    public ResponseEntity<String> reject(@PathVariable Integer id) {
+//        svc.rejectLeaveRequest(id);
+//        return ResponseEntity.ok("Leave request rejected successfully.");
+//    }
 
 
 
