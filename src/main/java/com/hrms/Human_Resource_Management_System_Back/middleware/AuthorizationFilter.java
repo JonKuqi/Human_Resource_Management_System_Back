@@ -147,8 +147,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             System.out.println("Requested verb: " + verb);
             System.out.println("Requested path: " + path);
 
+
+
+
             boolean permitted = false;
             List<String> targetRoles = new ArrayList<>();
+
+
 
             System.out.println("🟢 User Permissions:");
             System.out.printf("%-10s | %-50s%n", "VERB", "RESOURCE");
@@ -157,10 +162,21 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             // Iterate over each permission and check if the user has access to the requested verb and resource
             for (UserRolePermissionDto p : allowed) {
                 System.out.printf("%-10s | %-50s%n", p.getVerb(), p.getResource());
-                if (verb.equalsIgnoreCase(p.getVerb()) && pathMatcher.match(p.getResource(), path)) {
-                    permitted = true;
 
-                    if (p.getTarget_role() != null) { // This triggers path rewrite
+                String permissionPath = p.getResource();
+                if (permissionPath.endsWith("/") &&
+                        path.startsWith(permissionPath) &&
+                        path.substring(permissionPath.length()).matches("\\d+")) {
+                    // This handles cases where the permission is "/some/path/" and request is "/some/path/123"
+                    permitted = true;
+                    if (p.getTarget_role() != null) {
+                        targetRoles.add(p.getTarget_role());
+                    }
+                }
+                // Keep the original check for other cases
+                else if (verb.equalsIgnoreCase(p.getVerb()) && pathMatcher.match(p.getResource(), path)) {
+                    permitted = true;
+                    if (p.getTarget_role() != null) {
                         targetRoles.add(p.getTarget_role());
                     }
                 }

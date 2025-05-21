@@ -26,47 +26,43 @@ class PdfFilterServiceTest {
     private PdfFilterService pdfFilterService;
 
     private byte[] pdfWithKeyword;
-    private byte[] pdfWithoutKeyword;
 
     @BeforeEach
     void setUp() throws Exception {
         pdfWithKeyword = Files.readAllBytes(Paths.get("src/test/resources/Sample_CV.pdf"));
     }
 
-
-
     @Test
-    void shouldReturnTrueWhenKeywordExistsInPdf() throws Exception {
-        byte[] pdf = Files.readAllBytes(Paths.get("src/test/resources/Sample_CV.pdf"));
-
-        Document doc = new Document();
-        doc.setDocumentId(1L);
-        doc.setFileName("test_cv.pdf");
-        doc.setData(pdf);
+    void shouldReturnDocumentWhenAtLeastOneKeywordMatches() throws Exception {
+        Document doc = Document.builder()
+                .documentId(1L)
+                .fileName("test_cv.pdf")
+                .data(pdfWithKeyword)
+                .build();
 
         when(documentRepository.findAll()).thenReturn(List.of(doc));
 
-        List<Document> result = pdfFilterService.findPdfsContainingKeyword("Spring Boot");
+        List<String> keywords = List.of("Java","blla" );
+
+        List<Document> result = pdfFilterService.findPdfsContainingAnyKeywords(keywords);
 
         assertEquals(1, result.size());
     }
 
     @Test
-    void shouldReturnFalseWhenKeywordDoesNotExistInPdf() throws Exception {
-        byte[] pdf = Files.readAllBytes(Paths.get("src/test/resources/Sample_CV.pdf"));
-
-        Document doc = new Document();
-        doc.setDocumentId(2L);
-        doc.setFileName("test_cv.pdf");
-        doc.setData(pdf);
+    void shouldReturnEmptyListWhenNoKeywordsMatch() throws Exception {
+        Document doc = Document.builder()
+                .documentId(2L)
+                .fileName("test_cv.pdf")
+                .data(pdfWithKeyword)
+                .build();
 
         when(documentRepository.findAll()).thenReturn(List.of(doc));
 
-        // Use a word that definitely does NOT exist in the PDF
-        List<Document> result = pdfFilterService.findPdfsContainingKeyword("Unicorns");
+        List<String> keywords = List.of("Unicorn", "BlockchainMagic");
+
+        List<Document> result = pdfFilterService.findPdfsContainingAnyKeywords(keywords);
 
         assertEquals(0, result.size());
     }
-
-
 }

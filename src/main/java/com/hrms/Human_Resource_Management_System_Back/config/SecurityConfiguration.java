@@ -1,9 +1,14 @@
 package com.hrms.Human_Resource_Management_System_Back.config;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hrms.Human_Resource_Management_System_Back.exception.EmailNotVerifiedException;
 import com.hrms.Human_Resource_Management_System_Back.middleware.AuthorizationFilter;
 import com.hrms.Human_Resource_Management_System_Back.middleware.JwtAuthenticationFilter;
 import com.hrms.Human_Resource_Management_System_Back.middleware.SchemaRoutingFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -13,13 +18,17 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Security configuration for the application.
@@ -68,14 +77,19 @@ public class SecurityConfiguration {
                                 "/api/v1/public/subscriptions/**",
                                 "/api/v1/public/permission",
                                 "/api/v1/public/job-listing",
+                                "/api/v1/public/job-listing/**",
                                 "/api/v1/public/industry",
                                 //"/api/v1/public/user/filter",
                                 "/swagger-ui/*",
-                                "/v3/api-docs/**").permitAll()
+                                "/v3/api-docs/**",
+                                "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                )
 
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 // then pick the tenant
@@ -135,4 +149,61 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", cfg);
         return source;
     }
+/**`
+     * Configures the authentication entry point for handling unauthorized access.
+     * <p>
+     * - Returns a JSON response with a 401 status code.
+     * - Includes a timestamp and error message in the response body.
+     * </p>
+     *
+     * @return the configured authentication entry point
+     */
+@Bean
+public AuthenticationEntryPoint authenticationEntryPoint() {
+    return (request, response, authException) -> {
+        if (!response.isCommitted()) {
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("timestamp", LocalDateTime.now());
+            errorResponse.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+
+            // Check for EmailNotVerifiedException
+            if (authException instanceof EmailNotVerifiedException) {
+                errorResponse.put("message", "Email not verified.");
+                errorResponse.put("error", "Email not verified");
+            } else {
+                errorResponse.put("message", "Authentication failed.");
+                errorResponse.put("error", "UNAUTHORIZED");
+            }
+
+            mapper.writeValue(response.getOutputStream(), errorResponse);
+            response.flushBuffer();
+        }
+    };
+}
+
+    /**
+     * Configures the ObjectMapper for JSON serialization.
+     * <p>
+     * - Registers the JavaTimeModule to handle Java 8 date/time types.
+     * - Disables writing dates as timestamps.
+     * </p>
+     *
+     * @return the configured ObjectMapper
+     */
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return objectMapper;
+    }
+
+
 }

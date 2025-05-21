@@ -32,10 +32,9 @@ public class UserApplicationController extends BaseController<UserApplication, I
 
     @PostMapping(value = "/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> apply(
-            @RequestPart("data") String dataJson,  // Accept raw JSON string
+            @RequestPart("data") String dataJson,
             @RequestPart("cv") MultipartFile cvFile
     ) throws IOException {
-        // Convert JSON manually
         ObjectMapper objectMapper = new ObjectMapper();
         UserApplicationDto dto = objectMapper.readValue(dataJson, UserApplicationDto.class);
 
