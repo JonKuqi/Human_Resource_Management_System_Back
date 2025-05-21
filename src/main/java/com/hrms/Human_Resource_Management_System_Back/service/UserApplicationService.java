@@ -49,7 +49,6 @@ public class UserApplicationService extends BaseService<UserApplication,Integer>
         UserGeneral userGeneral = userGeneralRepository.findByUser_Email(user.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // ❗ Check if user already applied for this job
         boolean alreadyApplied = repository.existsByUser_UserIdAndJobListing_JobListingId(user.getUserId(), jobListing.getJobListingId());
         if (alreadyApplied) {
             throw new RuntimeException("You have already applied to this job.");
