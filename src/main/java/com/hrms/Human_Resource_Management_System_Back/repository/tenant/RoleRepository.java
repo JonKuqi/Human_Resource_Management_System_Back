@@ -12,4 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface RoleRepository extends BaseRepository<Role, Integer> {
+    Object findByRoleName(String owner);
 }

@@ -33,6 +33,10 @@ public class JwtService {
     @Value("${spring.jwt.secret}")
     private String secret;
 
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
     /**
      * Debug method to print the loaded JWT secret to the console after initialization.
      * <p>
