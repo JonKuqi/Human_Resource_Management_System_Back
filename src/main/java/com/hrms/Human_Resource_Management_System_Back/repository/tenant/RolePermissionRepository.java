@@ -64,4 +64,6 @@ public interface RolePermissionRepository extends BaseRepository<RolePermission,
     @Modifying
     @Query("DELETE FROM RolePermission rp WHERE rp.role.roleId = :roleId")
     void deleteByRoleId(@Param("roleId") Integer roleId);
+
+    boolean existsByRole_RoleIdAndTenantPermission_TenantPermissionId(Integer roleId, Integer tenantPermissionId);
 }
