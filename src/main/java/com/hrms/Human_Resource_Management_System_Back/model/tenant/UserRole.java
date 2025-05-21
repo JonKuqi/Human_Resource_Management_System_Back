@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

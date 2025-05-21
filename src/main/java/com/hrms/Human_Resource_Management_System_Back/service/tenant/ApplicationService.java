@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -41,6 +42,10 @@ public class ApplicationService extends BaseService<Application, Integer> {
         application.setUpdatedAt(LocalDateTime.now());
 
         return getRepository().save(application);
+    }
+
+    public List<Application> findByCvDocumentIds(List<Long> documentIds) {
+        return repo.findByCv_DocumentIdIn(documentIds);
     }
 
 

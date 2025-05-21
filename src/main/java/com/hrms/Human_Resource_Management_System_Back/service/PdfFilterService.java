@@ -18,14 +18,13 @@ public class PdfFilterService {
     public PdfFilterService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
     }
-
-    public List<Document> findPdfsContainingKeyword(String keyword) {
+    public List<Document> findPdfsContainingAnyKeywords(List<String> keywords) {
         List<Document> allDocs = documentRepository.findAll();
 
         return allDocs.stream()
                 .filter(doc -> {
                     try {
-                        return pdfContainsKeyword(doc.getData(), keyword);
+                        return pdfContainsAnyKeyword(doc.getData(), keywords);
                     } catch (Exception e) {
                         return false;
                     }
@@ -33,13 +32,14 @@ public class PdfFilterService {
                 .collect(Collectors.toList());
     }
 
-    private boolean pdfContainsKeyword(byte[] pdfBytes, String keyword) throws Exception {
+    private boolean pdfContainsAnyKeyword(byte[] pdfBytes, List<String> keywords) throws Exception {
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
             PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(document).toLowerCase();
 
-            String text = stripper.getText(document);
-            return text.toLowerCase().contains(keyword.toLowerCase());
+            return keywords.stream().anyMatch(k -> text.contains(k.toLowerCase()));
         }
     }
+
 }
 

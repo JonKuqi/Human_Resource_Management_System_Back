@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface EvaluationQuestionRepository
         extends BaseRepository<EvaluationQuestion, Integer> {
-    List<EvaluationQuestion> findByTemplateId(Integer templateId);
+
 }
