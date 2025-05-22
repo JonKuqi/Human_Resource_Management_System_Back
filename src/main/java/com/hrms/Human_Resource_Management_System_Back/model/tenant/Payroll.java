@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +33,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Payroll {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/tenant/role-permission")
 @AllArgsConstructor
@@ -20,11 +18,11 @@ public class RolePermissionController extends BaseController<RolePermission, Int
         return svc;
     }
 
-    @GetMapping("/by-role/{roleId}")
-    public ResponseEntity<List<RolePermission>> getByRoleId(@PathVariable Integer roleId) {
-        List<RolePermission> list = svc.findByRoleId(roleId);
-        return ResponseEntity.ok(list);
-    }
+//    @GetMapping("/by-role/{roleId}")
+//    public ResponseEntity<List<RolePermission>> getByRoleId(@PathVariable Integer roleId) {
+//        List<RolePermission> list = svc.findByRoleId(roleId);
+//        return ResponseEntity.ok(list);
+//    }
 
     /** PUT /api/v1/tenant/role-permission/replace/{roleId} */
     @PutMapping("/replace/{roleId}")

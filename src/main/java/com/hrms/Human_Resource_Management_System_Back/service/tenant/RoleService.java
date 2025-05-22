@@ -1,10 +1,17 @@
 package com.hrms.Human_Resource_Management_System_Back.service.tenant;
 
+import com.hrms.Human_Resource_Management_System_Back.model.TenantPermission;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.Role;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.RolePermission;
+import com.hrms.Human_Resource_Management_System_Back.repository.TenantPermissionRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RolePermissionRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RoleRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Service class for handling business logic related to roles.
@@ -21,6 +28,17 @@ public class RoleService extends BaseService<Role, Integer> {
      * The repository for performing CRUD operations on role entities.
      */
     private final RoleRepository repo;
+    private final RolePermissionRepository rolePermissionRepo;
+    private final TenantPermissionRepository tenantPermissionRepo;
+
+    private static final List<String> STARTER_PERMISSION_NAMES = List.of(
+            "AUTHENTICATE_USER",
+            "CHANGE_PASSWORD",
+            "VIEW_USER",           // see own profile
+            "UPDATE_USER",         // edit own profile
+            "LIST_NOTIFICATIONS",  // bell icon
+            "VIEW_NOTIFICATION"
+    );
 
     /**
      * Returns the role repository.
@@ -34,5 +52,37 @@ public class RoleService extends BaseService<Role, Integer> {
     @Override
     protected RoleRepository getRepository() {
         return repo;
+    }
+
+    /**
+     * Saves a role and, if it’s brand-new, attaches the starter permissions.
+     */
+    @Override
+    @Transactional
+    public Role save(Role entity) {
+
+        boolean isNew = (entity.getRoleId() == null);
+        Role saved = super.save(entity);
+
+        if (isNew) {
+            // Fetch all matching TenantPermission rows in one round-trip
+            List<TenantPermission> perms =
+                    tenantPermissionRepo.findByNameIn(STARTER_PERMISSION_NAMES);
+
+            perms.forEach(p -> {
+                // Avoid duplicates if the list or DB changes later
+                boolean alreadyLinked = rolePermissionRepo
+                        .existsByRole_RoleIdAndTenantPermission_TenantPermissionId(
+                                saved.getRoleId(), p.getTenantPermissionId());
+
+                if (!alreadyLinked) {
+                    RolePermission rp = new RolePermission();
+                    rp.setRole(saved);
+                    rp.setTenantPermission(p);
+                    rolePermissionRepo.save(rp);
+                }
+            });
+        }
+        return saved;
     }
 }
