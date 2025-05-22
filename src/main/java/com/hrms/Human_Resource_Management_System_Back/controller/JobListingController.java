@@ -19,15 +19,6 @@ public class JobListingController extends BaseController<JobListing, Integer> {
     }
 
 
-    //    @Operation(
-//            summary = "Create a new job listing",
-//            description = "Allows HR to post a new job that applicants can view and apply for."
-//    ) @SecurityRequirement(name = "bearerAuth")
-//    @PostMapping("/addJobList")
-//    public ResponseEntity<JobListing> addJobList(@RequestBody AddJobListingRequest request) {
-//        JobListing jobListing = jobListingService.addJobList(request);
-//        return ResponseEntity.ok(jobListing);
-//    }
 
 
 }
