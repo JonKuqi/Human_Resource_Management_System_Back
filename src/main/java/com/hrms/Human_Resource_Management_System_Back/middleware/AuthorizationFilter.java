@@ -140,6 +140,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 System.out.println(" IS OWNER: every request is ALLOWED!");
                 chain.doFilter(request, response);
                 return;
+            }else{
+                System.out.println(" IS NOT OWNER: every request is NOT ALLOWED!");
             }
 
             String verb = request.getMethod(); // GET / POST / PUT / DELETE ...
@@ -166,7 +168,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 String permissionPath = p.getResource();
                 if (permissionPath.endsWith("/") &&
                         path.startsWith(permissionPath) &&
-                        path.substring(permissionPath.length()).matches("\\d+")) {
+                        path.substring(permissionPath.length()).matches("\\d+")&&
+                        verb.equalsIgnoreCase(p.getVerb())) {
                     // This handles cases where the permission is "/some/path/" and request is "/some/path/123"
                     permitted = true;
                     if (p.getTarget_role() != null) {
