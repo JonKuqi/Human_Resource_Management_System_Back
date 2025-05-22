@@ -4,7 +4,7 @@ app:
 
 spring:
   datasource:
-    url: jdbc:postgresql://switchyard.proxy.rlwy.net:36760/railway?sslmode=require
+    url: jdbc:postgresql://turntable.proxy.rlwy.net:36760/railway?sslmode=require
     username: postgres
     password: gASEdAWmqCjaGAfapIeZqCkObUXuhNeL
     driver-class-name: org.postgresql.Driver
@@ -43,6 +43,13 @@ spring:
 
   jwt:
     secret: "aJH3xcaotUUB+7R2FDyDMxWnejGZrNFGtfa7wQ8bqhw="
+
+
+paypal:
+  client-id: AcBlu4JP-XYaKyE0zwqqfbSHr6gAC396CX58suzZamypO1J5ISPK3TddvRi5xZLf5RO7rEuAc_QO2uKI
+  client-secret: EGGcHtKd6yyMAdsdHG5pO8Gb2sxaHZohou7OD4DJ0KB-73WXnJh3wo73nkB13QkYD-6vhCEyT1hpmex1
+  mode: sandbox
+
 
 
 logging:
