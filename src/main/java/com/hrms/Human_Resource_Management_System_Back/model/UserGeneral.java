@@ -11,7 +11,22 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 
-
+/**
+ * Represents a user general entity in the public schema of the system.
+ * <p>
+ * - userGeneralId: The unique identifier for the user general.
+ * - user: The associated user entity.
+ * - firstName: The first name of the user.
+ * - lastName: The last name of the user.
+ * - phone: The phone number of the user.
+ * - gender: The gender of the user.
+ * - birthDate: The birth date of the user.
+ * - profilePhoto: The user's profile photo.
+ * - cvData: The user's CV data.
+ * - portfolio: The user's portfolio.
+ * - verified: Whether the user's email is verified.
+ * </p>
+ */
 @Entity
 @Table(name = "user_general", schema = "public")
 @Data

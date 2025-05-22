@@ -6,6 +6,20 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a tenant entity in the public schema of the system.
+ * <p>
+ * - tenantId: The unique identifier for the tenant.
+ * - name: The name of the tenant.
+ * - contactEmail: The contact email of the tenant.
+ * - address: The address associated with the tenant.
+ * - webLink: The website link of the tenant.
+ * - description: A description of the tenant.
+ * - createdAt: The date and time when the tenant was created.
+ * - updatedAt: The date and time when the tenant was last updated.
+ * - schemaName: The name of the schema used by the tenant in a multi-tenant system.
+ * </p>
+ */
 @Entity
 @Table(name = "tenant", schema = "public")
 @Data

@@ -1,13 +1,34 @@
 package com.hrms.Human_Resource_Management_System_Back.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.hrms.Human_Resource_Management_System_Back.model.types.EmploymentType;
-import jakarta.persistence.*;
-import lombok.*;
-
+/**
+ * Represents a job listing entity in the public schema of the system.
+ * <p>
+ * - jobListingId: The unique identifier for the job listing.
+ * - tenant: The tenant associated with the job listing.
+ * - jobTitle: The title of the job.
+ * - industry: The industry associated with the job listing.
+ * - customIndustry: A custom industry name if not available from predefined options.
+ * - location: The location of the job.
+ * - employmentType: The type of employment (e.g., full-time, part-time).
+ * - description: A detailed description of the job role.
+ * - aboutUs: Information about the company offering the job.
+ * - salaryFrom: The minimum salary for the job.
+ * - salaryTo: The maximum salary for the job.
+ * - validUntil: The expiration date for the job listing.
+ * - createdAt: The date and time when the job listing was created.
+ * </p>
+ */
 @Entity
 @Table(name = "job_listing", schema = "public")
 @Data
@@ -57,6 +78,7 @@ public class JobListing {
     @Column(name = "valid_until", nullable = false)
     private LocalDate validUntil;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }

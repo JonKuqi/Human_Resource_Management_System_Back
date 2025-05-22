@@ -9,9 +9,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Global exception handler for handling data integrity violations.
+ * <p>
+ * This class catches {@link DataIntegrityViolationException} thrown by the application and returns a meaningful error response.
+ * It customizes the error message depending on the constraint violation (e.g., duplicate email or username).
+ * </p>
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Handles {@link DataIntegrityViolationException} and provides a custom error message.
+     * <p>
+     * This method checks the specific constraint that was violated (e.g., email or username) and returns a 409 Conflict status
+     * with an appropriate error message.
+     * </p>
+     *
+     * @param ex the {@link DataIntegrityViolationException} to handle
+     * @return a {@link ResponseEntity} containing a map with the error message
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         String message = "Duplicate entry. This email or username is already in use.";

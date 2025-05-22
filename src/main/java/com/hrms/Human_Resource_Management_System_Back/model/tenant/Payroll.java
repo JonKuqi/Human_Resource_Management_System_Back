@@ -10,6 +10,22 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+
+/**
+ * Represents a payroll entity in the system.
+ * <p>
+ * - payrollId: The unique identifier for the payroll.
+ * - userTenant: The user tenant associated with the payroll.
+ * - payPeriodStart: The start date of the pay period.
+ * - payPeriodEnd: The end date of the pay period.
+ * - baseSalary: The base salary for the employee during the pay period.
+ * - bonuses: The bonuses given to the employee during the pay period.
+ * - deductions: The deductions made from the employee's salary.
+ * - netPay: The net pay after bonuses and deductions.
+ * - paymentDate: The date the payroll was processed and paid.
+ * - createdAt: The timestamp when the payroll record was created.
+ * </p>
+ */
 @Entity
 @Table(name = "payroll")
 @Data

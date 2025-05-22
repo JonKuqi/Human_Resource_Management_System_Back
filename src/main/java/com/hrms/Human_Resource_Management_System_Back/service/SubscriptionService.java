@@ -5,6 +5,8 @@ import com.hrms.Human_Resource_Management_System_Back.repository.SubscriptionRep
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class SubscriptionService extends BaseService<Subscription, Integer> {
@@ -14,5 +16,8 @@ public class SubscriptionService extends BaseService<Subscription, Integer> {
     @Override
     protected SubscriptionRepository getRepository() {
         return subscriptionRepository;
+    }
+    public List<Subscription> getAllPlans() {
+        return subscriptionRepository.findAll();
     }
 }

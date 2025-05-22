@@ -1,10 +1,20 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+/**
+ * Represents a user role entity in the system.
+ * <p>
+ * - userRoleId: The unique identifier for the user role.
+ * - userTenant: The user tenant associated with the role.
+ * - role: The role assigned to the user tenant.
+ * </p>
+ */
 
 @Entity
 @Table(name = "user_role_table",
@@ -13,6 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

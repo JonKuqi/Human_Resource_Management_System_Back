@@ -1,6 +1,7 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hrms.Human_Resource_Management_System_Back.model.Address;
 import com.hrms.Human_Resource_Management_System_Back.model.Tenant;
 import com.hrms.Human_Resource_Management_System_Back.model.User;
@@ -14,9 +15,26 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a user tenant entity in the system.
+ * <p>
+ * - userTenantId: The unique identifier for the user tenant.
+ * - user: The user associated with the tenant.
+ * - tenant: The tenant that the user is associated with.
+ * - firstName: The first name of the user tenant.
+ * - lastName: The last name of the user tenant.
+ * - phone: The phone number of the user tenant.
+ * - gender: The gender of the user tenant.
+ * - profilePhoto: The profile photo of the user tenant.
+ * - address: The address associated with the user tenant.
+ * - createdAt: The timestamp when the user tenant was created.
+ * </p>
+ */
+
 @Entity
 @Table(name = "user_tenant")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -31,6 +49,7 @@ public class UserTenant {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
@@ -52,6 +71,7 @@ public class UserTenant {
     private byte[] profilePhoto;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 

@@ -5,6 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data transfer object (DTO) for authentication response.
+ * <p>
+ * - token: The JWT token generated after successful authentication.
+ * - verified: The status indicating whether the user's email is verified.
+ * </p>
+ */
 @Data
 @Builder
 @AllArgsConstructor
@@ -12,4 +19,8 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
     private String token;
     private boolean verified;
+
+    public AuthenticationResponse(String s) {
+        this.token = s;
+    }
 }

@@ -6,6 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data transfer object (DTO) for authentication request.
+ * <p>
+ * - email: The email address of the user.
+ * - password: The password of the user.
+ * </p>
+ */
 @Data
 @Builder
 @AllArgsConstructor

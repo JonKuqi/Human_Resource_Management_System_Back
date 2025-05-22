@@ -1,7 +1,5 @@
 package com.hrms.Human_Resource_Management_System_Back.model;
 
-
-import com.hrms.Human_Resource_Management_System_Back.model.types.BillingCycle;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +27,10 @@ public class Subscription {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "billing_cycle", nullable = false)
-    private BillingCycle billingCycle;
+    @Column(name = "billing_cycle", nullable = false, length = 50)
+    private String billingCycle;
+
+    @Column(name = "max_users")
+    private Integer maxUsers;
+
 }

@@ -11,10 +11,30 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for managing {@link UserTenant} entities.
+ * <p>
+ * This repository extends {@link BaseUserSpecificRepository} and provides methods for querying and modifying user-tenant data,
+ * including role-based access control (RBAC).
+ * </p>
+ */
 @Repository
 public interface UserTenantRepository extends BaseUserSpecificRepository<UserTenant, Integer> {
+
+    /**
+     * Retrieves a {@link UserTenant} entity by its user's email.
+     *
+     * @param email the email of the user
+     * @return an {@link Optional} containing the {@link UserTenant} if found
+     */
     Optional<UserTenant> findByUser_Email(String email);
 
+    /**
+     * Retrieves all {@link UserTenant} entities that have all of the specified roles.
+     *
+     * @param roles the list of roles to check
+     * @return a list of {@link UserTenant} entities that have all the specified roles
+     */
     @Query("""
        SELECT ut
        FROM UserTenant ut
@@ -26,6 +46,13 @@ public interface UserTenantRepository extends BaseUserSpecificRepository<UserTen
     """)
     List<UserTenant> findAllRole(@Param("roles") List<String> roles);
 
+    /**
+     * Retrieves a {@link UserTenant} entity by its ID if the user has all the specified roles.
+     *
+     * @param id    the ID of the user tenant
+     * @param roles the list of roles to check
+     * @return an {@link Optional} containing the {@link UserTenant} if found
+     */
     @Query("""
        SELECT ut
        FROM UserTenant ut
@@ -39,6 +66,12 @@ public interface UserTenantRepository extends BaseUserSpecificRepository<UserTen
     Optional<UserTenant> findByIdRole(@Param("id") Integer id,
                                       @Param("roles") List<String> roles);
 
+    /**
+     * Deletes a {@link UserTenant} entity by its ID if the user has all the specified roles.
+     *
+     * @param id    the ID of the user tenant
+     * @param roles the list of roles to check
+     */
     @Override
     @Modifying
     @Transactional

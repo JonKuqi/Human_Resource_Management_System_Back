@@ -9,6 +9,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a notification entity in the system.
+ * <p>
+ * - notificationId: The unique identifier for the notification.
+ * - userTenant: The user tenant associated with the notification.
+ * - title: The title of the notification.
+ * - description: The description of the notification.
+ * - createdAt: The timestamp when the notification was created.
+ * - expiresAt: The expiration timestamp of the notification.
+ * </p>
+ */
 @Entity
 @Table(name = "notifications")
 @Data

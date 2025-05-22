@@ -1,4 +1,4 @@
-package com.hrms.Human_Resource_Management_System_Back.component;
+package com.hrms.Human_Resource_Management_System_Back.middleware;
 
 import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
 import jakarta.servlet.FilterChain;

@@ -7,6 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a tenant permission entity in the public schema of the system.
+ * <p>
+ * - tenantPermissionId: The unique identifier for the tenant permission.
+ * - name: The name of the permission.
+ * - verb: The HTTP verb associated with the permission (e.g., GET, POST).
+ * - resource: The resource to which the permission applies.
+ * </p>
+ */
 @Entity
 @Table(name = "tenant_permission", schema = "public")
 @Data

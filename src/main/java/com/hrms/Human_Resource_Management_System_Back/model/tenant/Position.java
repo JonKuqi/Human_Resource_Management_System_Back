@@ -9,6 +9,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a position entity in the system.
+ * <p>
+ * - positionId: The unique identifier for the position.
+ * - department: The department associated with the position.
+ * - title: The title of the position.
+ * - description: The description of the position.
+ * - createdAt: The timestamp when the position was created.
+ * </p>
+ */
+
 @Entity
 @Table(name = "position")
 @Data

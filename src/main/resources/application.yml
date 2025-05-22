@@ -1,6 +1,7 @@
 app:
   frontend:
-    url: http://localhost:3000
+    url: ${FRONTEND_URL:http://localhost:3000}
+
 
 spring:
   datasource:
@@ -40,7 +41,6 @@ spring:
 
   profiles:
     active: default
-
 
   jwt:
     secret: "aJH3xcaotUUB+7R2FDyDMxWnejGZrNFGtfa7wQ8bqhw="

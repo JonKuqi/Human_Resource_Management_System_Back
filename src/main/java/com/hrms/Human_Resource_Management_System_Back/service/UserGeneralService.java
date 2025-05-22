@@ -26,6 +26,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service class for handling user general operations such as registration, email verification,
+ * and verification code management.
+ * <p>
+ * This service manages the logic for registering general users, verifying their emails, and resending
+ * verification codes. It interacts with repositories for managing user data and handles sending verification
+ * emails to users.
+ * </p>
+ */
 @Service
 @AllArgsConstructor
 public class UserGeneralService extends BaseService<UserGeneral, Integer> {
@@ -38,16 +47,41 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
     @Autowired
     private JavaMailSender mailSender;
 
+    /**
+     * Returns the user general repository.
+     * <p>
+     * This method overrides the {@link BaseService#getRepository()} method to return the specific repository
+     * for user general entities.
+     * </p>
+     *
+     * @return the user general repository
+     */
     @Override
     protected UserGeneralRepository getRepository() {
         return userGeneralRepository;
     }
 
+    /**
+     * Initializes the email sender service.
+     * <p>
+     * This method is called after the service is constructed to initialize the email sender with the configured mail sender.
+     * </p>
+     */
     @PostConstruct
     public void init() {
         EmailSenderService.initialize(mailSender);
     }
 
+    /**
+     * Registers a new user general account and sends a verification email.
+     * <p>
+     * This method handles user registration, including saving the user and user general information, generating
+     * a verification code, and sending a verification email to the user.
+     * </p>
+     *
+     * @param request the registration request containing user details
+     * @return an authentication response containing the generated JWT token for the user
+     */
     @Transactional
     public AuthenticationResponse register(RegisterGeneralRequest request) {
         String role = String.valueOf(RoleUser.GENERAL_USER);
@@ -63,7 +97,6 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
                 .build();
 
         User u = userRepository.save(user);
-
 
         // 2. Save UserGeneral using real request fields
         UserGeneral userGeneral = UserGeneral.builder()
@@ -83,8 +116,6 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
         // 3. Wrap and generate token
         CustomUserDetails userDetails = new CustomUserDetails(u.getUserId(), userGeneral);
 
-
-
         String rawCode = VerificationCodeService.generate6DigitCode(); // You write this util
         System.out.println("Your Raw Code is :" + rawCode);
         String codeHash = passwordEncoder.encode(rawCode); // or use a hash function if not re-checking
@@ -97,13 +128,14 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
                 .build();
         verificationCodeRepository.save(code);
 
+        // Send email with verification code
         EmailSenderService.sendVerificationEmail(
                 user.getEmail(),
                 "Verify your email",
                 "Your code is: " + rawCode + "\nClick: https://your-frontend.com/verify?email=" + user.getEmail() + "&code=" + rawCode
         );
 
-
+        // Generate JWT token and return response
         Map<String, Object> claims = Map.of(
                 "sub", userDetails.getUsername(),
                 "tenant", userDetails.getTenant(),
@@ -111,7 +143,6 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
                 "user_id", u.getUserId(),
                 "user_general_id", ug.getUserGeneralId(),
                 "email", u.getEmail()
-
         );
         String jwtToken = jwtService.generateToken(claims, userDetails.getUsername(), Duration.ofHours(12));
         return AuthenticationResponse.builder()
@@ -119,6 +150,17 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
                 .verified(false)
                 .build();
     }
+
+    /**
+     * Verifies the user's email address using the provided verification code.
+     * <p>
+     * This method checks if the provided verification code is valid, ensures that it has not expired or been used already,
+     * and then marks it as used. After successful verification, the user's email is marked as verified.
+     * </p>
+     *
+     * @param request the request containing the email and verification code
+     * @return a response indicating the result of the email verification
+     */
     @Transactional
     public ResponseEntity<?> verifyEmail(VerifyRequest request) {
         VerificationCode code = verificationCodeRepository.findLatestByUserEmail(request.getEmail())
@@ -143,6 +185,17 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
 
         return ResponseEntity.ok(Map.of("message", "Email verified successfully"));
     }
+
+    /**
+     * Resends the verification code to the specified email address.
+     * <p>
+     * This method looks up the user by their email, invalidates any previous verification codes, generates a new code,
+     * and sends it via email.
+     * </p>
+     *
+     * @param email the email address to resend the verification code to
+     * @return a response indicating the success of the resend operation
+     */
     @Transactional
     public ResponseEntity<?> resendVerificationCode(String email) {
         // 1. Look up the user and userGeneral
@@ -170,8 +223,7 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
                 .build();
         verificationCodeRepository.save(newCode);
 
-        // 4. Send email
-
+        // 4. Send email with new verification code
         EmailSenderService.sendVerificationEmail(
                 user.getEmail(),
                 "Verify your email",
@@ -179,11 +231,6 @@ public class UserGeneralService extends BaseService<UserGeneral, Integer> {
                         "\n\nOr click: https://your-frontend.com/verify?email=" + user.getEmail() + "&code=" + rawCode
         );
 
-
         return ResponseEntity.ok(Map.of("message", "Verification code resent successfully"));
     }
-
-
-
-
 }
