@@ -2,12 +2,11 @@ app:
   frontend:
     url: ${FRONTEND_URL:http://localhost:3000}
 
-
 spring:
   datasource:
-    url: jdbc:postgresql://switchyard.proxy.rlwy.net:28769/railway?sslmode=require
+    url: jdbc:postgresql://switchyard.proxy.rlwy.net:36760/railway?sslmode=require
     username: postgres
-    password: zaUUrGQFqrBXGzFhilhSgzYIpxsWzYMj
+    password: gASEdAWmqCjaGAfapIeZqCkObUXuhNeL
     driver-class-name: org.postgresql.Driver
 
 
