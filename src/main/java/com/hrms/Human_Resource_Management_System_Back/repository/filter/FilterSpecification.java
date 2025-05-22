@@ -57,25 +57,28 @@ public class FilterSpecification<T> implements Specification<T> {
      */
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        Predicate predicate = cb.conjunction(); // Start with an empty conjunction (AND)
+        Predicate predicate = cb.conjunction();
 
-        // Iterate over all filter entries and construct predicates
         for (Map.Entry<String, String> entry : filters.entrySet()) {
             String field = entry.getKey();
             String value = entry.getValue();
 
             try {
-                // Ensure the field exists on the entity before applying the filter
-                if (root.get(field) != null) {
-                    // Add a filter condition (e.g., field = value)
-                    predicate = cb.and(predicate, cb.equal(root.get(field), value));
+                // Support nested fields like role.id
+                String[] parts = field.split("\\.");
+                if (parts.length == 1) {
+                    predicate = cb.and(predicate, cb.equal(root.get(parts[0]), value));
+                } else if (parts.length == 2) {
+                    predicate = cb.and(predicate, cb.equal(root.get(parts[0]).get(parts[1]), value));
+                } else {
+                    System.out.println("Invalid nested filter field: " + field);
                 }
             } catch (IllegalArgumentException e) {
-                // If the field does not exist or is invalid, log the error
                 System.out.println("Invalid filter field: " + field);
             }
         }
 
         return predicate;
     }
+
 }

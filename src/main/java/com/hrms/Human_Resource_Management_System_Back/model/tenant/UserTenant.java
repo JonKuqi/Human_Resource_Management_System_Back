@@ -38,7 +38,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UserTenant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
