@@ -2,6 +2,7 @@ package com.hrms.Human_Resource_Management_System_Back.controller;
 
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseUserSpecificService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,10 @@ public abstract class BaseUserSpecificController<T, ID> extends BaseController<T
      * @param req the {@link HttpServletRequest} containing the user roles
      * @return a list of entities the user is authorized to access
      */
+    @Operation(
+            summary = "List all accessible entities by role",
+            description = "Returns a list of entities filtered based on the current user's assigned roles."
+    )
     @GetMapping("/role-based/")
     public List<T> listRole(HttpServletRequest req) {
         return getServiceSpecific().findAllRole(roles(req));
@@ -83,6 +88,11 @@ public abstract class BaseUserSpecificController<T, ID> extends BaseController<T
      * @param req the {@link HttpServletRequest} containing the user roles
      * @return the entity if the user is authorized, otherwise throws {@link ResponseStatusException}
      */
+
+    @Operation(
+            summary = "Get an entity by ID (role-based access)",
+            description = "Retrieves an entity by its ID if the user has the appropriate role."
+    )
     @GetMapping("/role-based/{id}")
     public ResponseEntity<T> getByIdRole(@PathVariable ID id,
                                          HttpServletRequest req) {
@@ -101,6 +111,10 @@ public abstract class BaseUserSpecificController<T, ID> extends BaseController<T
      * @param id  the ID of the entity to delete
      * @param req the {@link HttpServletRequest} containing the user roles
      */
+    @Operation(
+            summary = "Delete an entity by ID (role-based access)",
+            description = "Deletes an entity if the user has the appropriate role to perform the action."
+    )
     @DeleteMapping("/role-based/{id}")
     public void deleteByIdRole(@PathVariable ID id,
                                HttpServletRequest req) {

@@ -7,6 +7,7 @@ import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterTenantUs
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserTenant;
 import com.hrms.Human_Resource_Management_System_Back.service.tenant.UserTenantService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/tenant/user-tenant")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class UserTenantController extends BaseUserSpecificController<UserTenant, Integer> {
 
     /**
@@ -52,6 +54,8 @@ public class UserTenantController extends BaseUserSpecificController<UserTenant,
      * @param rq the registration request containing user details
      * @return a {@link ResponseEntity} containing the authentication response
      */
+    @Operation(summary = "Register a user tenant", description = "Registers a new user in the current tenant and returns an authentication response.")
+
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterTenantUserRequest rq) {

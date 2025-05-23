@@ -3,6 +3,7 @@ package com.hrms.Human_Resource_Management_System_Back.controller;
 import com.hrms.Human_Resource_Management_System_Back.model.Skill;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.SkillDto;
 import com.hrms.Human_Resource_Management_System_Back.service.SkillService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,6 +54,11 @@ public class SkillController extends BaseController<Skill, Integer> {
      * @param query the search keyword
      * @return a list of skills matching the query
      */
+
+    @Operation(
+            summary = "Search for skills",
+            description = "Searches and returns a list of skills matching the query string."
+    )
     @GetMapping("/search")
     public ResponseEntity<List<SkillDto>> searchSkills(@RequestParam("q") String query) {
         return ResponseEntity.ok(skillService.searchSkills(query));
