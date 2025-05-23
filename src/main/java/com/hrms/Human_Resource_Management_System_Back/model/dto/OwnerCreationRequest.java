@@ -17,6 +17,7 @@ import lombok.Data;
  * - address: The address of the new owner.
  * </p>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OwnerCreationRequest {
