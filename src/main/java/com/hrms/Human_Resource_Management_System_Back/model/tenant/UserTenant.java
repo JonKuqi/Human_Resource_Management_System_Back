@@ -34,7 +34,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "user_tenant")
 @Data
-//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
