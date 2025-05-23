@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -214,18 +215,29 @@ public class TenantOnboardingService {
                 .build();
         userRoleRepo.save(ur);
 
-        // 11. automatically assigne this permission to the owner role
-        TenantPermission permission = tenantPermissionRepo
-                .findByResourceAndVerb("/api/v1/tenant/user-role", "POST")
-                .orElseThrow(() -> new RuntimeException("Permission not found"));
+        // 11. automatically assigne this permission to the owner role and subscription
+        List<String[]> permissionsToAssign = List.of(
+                new String[]{"POST", "/api/v1/tenant/user-role"},
+                new String[]{"POST", "/api/v1/tenant/subscriptions/payments/create"}
+        );
 
-        RolePermission rolePermission = RolePermission.builder()
-                .role(role)
-                .tenantPermission(permission)
-                .targetRoleId(role)
-                .build();
+        for (String[] perm : permissionsToAssign) {
+            String verb = perm[0];
+            String resource = perm[1];
 
-        rolePermissionRepo.save(rolePermission);
+            TenantPermission tp = tenantPermissionRepo
+                    .findByResourceAndVerb(resource, verb)
+                    .orElseThrow(() -> new RuntimeException("Permission not found: " + verb + " " + resource));
+
+            RolePermission rp = RolePermission.builder()
+                    .role(role)
+                    .tenantPermission(tp)
+                    .targetRoleId(role)
+                    .build();
+
+            rolePermissionRepo.save(rp);
+        }
+
 
 
         // 12. Generate and return the JWT token for the user
