@@ -3,14 +3,19 @@ package com.hrms.Human_Resource_Management_System_Back.service.tenant;
 import com.hrms.Human_Resource_Management_System_Back.middleware.TenantCtx;
 import com.hrms.Human_Resource_Management_System_Back.model.*;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
-import com.hrms.Human_Resource_Management_System_Back.model.dto.CreateEmployeeRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterTenantUserRequest;
-import com.hrms.Human_Resource_Management_System_Back.model.tenant.*;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.Contract;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.Department;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.Position;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserTenant;
 import com.hrms.Human_Resource_Management_System_Back.repository.AddressRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.TenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.TenantSubscriptionRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
-import com.hrms.Human_Resource_Management_System_Back.repository.tenant.*;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.ContractRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.DepartmentRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.PositionRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseUserSpecificService;
 import com.hrms.Human_Resource_Management_System_Back.service.EmailSenderService;
 import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
@@ -22,14 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.Optional;
 
 /**
  * Service class for handling user-tenant operations such as user registration, profile photo updates,
@@ -252,5 +255,24 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
 
         entity.setProfilePhoto(file.getBytes());  // Set the profile photo as a byte array
         repo.save(entity);  // Save the updated user tenant entity
+    }
+
+    public boolean updateBasicInfo(UserTenantUpdateDTO dto) {
+        Optional<UserTenant> optionalUserTenant = repo.findById(dto.getUserTenantId());
+        Optional<Address> optionalAddress = addressRepository.findById(dto.getAddressId());
+
+        if (optionalUserTenant.isEmpty() || optionalAddress.isEmpty()) {
+            return false;
+        }
+
+        UserTenant ut = optionalUserTenant.get();
+        ut.setFirstName(dto.getFirstName());
+        ut.setLastName(dto.getLastName());
+        ut.setPhone(dto.getPhone());
+        ut.setGender(dto.getGender());
+        ut.setAddress(optionalAddress.get());
+
+        repo.save(ut);
+        return true;
     }
 }

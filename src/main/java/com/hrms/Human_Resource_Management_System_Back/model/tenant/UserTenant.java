@@ -45,7 +45,7 @@ public class UserTenant {
     @Column(name = "user_tenant_id")
     private Integer userTenantId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)// <-- add this
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
