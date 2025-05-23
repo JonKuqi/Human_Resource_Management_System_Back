@@ -170,6 +170,19 @@ CREATE TABLE IF NOT EXISTS evaluation_answer (
     );
 
 
+INSERT INTO department (name, description) VALUES
+('Human Resources', 'Responsible for employee recruitment, retention, and wellbeing.'),
+('Engineering', 'Handles product development and technical infrastructure.'),
+('Sales', 'Focuses on selling products and services to customers.'),
+('Marketing', 'Promotes the company’s products and builds brand awareness.'),
+('Finance', 'Manages budgets, forecasts, and financial planning.'),
+('Customer Support', 'Assists customers with issues and questions.'),
+('Research and Development', 'Works on innovation and new product design.'),
+('Operations', 'Ensures efficient day-to-day business processes.'),
+('Legal', 'Handles legal affairs and compliance.'),
+('IT', 'Maintains internal technology systems and cybersecurity.');
+
+
 
 
 
