@@ -3,14 +3,19 @@ package com.hrms.Human_Resource_Management_System_Back.service.tenant;
 import com.hrms.Human_Resource_Management_System_Back.middleware.TenantCtx;
 import com.hrms.Human_Resource_Management_System_Back.model.*;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
-import com.hrms.Human_Resource_Management_System_Back.model.dto.CreateEmployeeRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterTenantUserRequest;
-import com.hrms.Human_Resource_Management_System_Back.model.tenant.*;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.Contract;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.Department;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.Position;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserTenant;
 import com.hrms.Human_Resource_Management_System_Back.repository.AddressRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.TenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.TenantSubscriptionRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
-import com.hrms.Human_Resource_Management_System_Back.repository.tenant.*;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.ContractRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.DepartmentRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.PositionRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseUserSpecificService;
 import com.hrms.Human_Resource_Management_System_Back.service.EmailSenderService;
 import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
@@ -22,13 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.Optional;
 
 /**
  * Service class for handling user-tenant operations such as user registration, profile photo updates,
@@ -137,20 +141,30 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
      * @throws RuntimeException if the user limit is exceeded
      */
     private void validateMaxUsersLimit(Tenant tenant) {
-        TenantSubscription tenantSubscription = tenantSubscriptionRepository.findByTenant(tenant)
-                .orElseThrow(() -> new RuntimeException("Subscription not found for tenant"));
+        List<TenantSubscription> subscriptions = tenantSubscriptionRepository.findAllByTenantOrderByCreatedAtDesc(tenant);
 
-        Subscription subscription = tenantSubscription.getSubscription();
+        if (subscriptions.isEmpty()) {
+            throw new RuntimeException("Subscription not found for tenant");
+        }
 
+        TenantSubscription latest = subscriptions.get(0);
+
+        Subscription subscription = latest.getSubscription();
         Integer maxUsers = subscription.getMaxUsers();
-        if (maxUsers == null) return;  // No limit
 
-        int currentUsers =  (int) repo.count();
+        if (maxUsers == null) return;
+
+        int currentUsers = (int) repo.count();
 
         if (currentUsers >= maxUsers) {
-            throw new RuntimeException("Maximum user limit reached for your subscription plan (" + maxUsers + " users allowed).");
+            throw new RuntimeException(
+                    "Maximum user limit reached for your current plan '" + subscription.getPlanName() +
+                            "' (" + maxUsers + " users allowed). Please upgrade to a higher plan."
+            );
         }
     }
+
+
 
     /**
      * Creates a new employee along with related data by User Tenant Owner.
@@ -164,99 +178,47 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
      * Sends a verification email with the generated temporary password to the employee.
      * </p>
      *
-     * @param rq the request containing employee registration data
+     * @param entity the request containing employee registration data
      * @throws RuntimeException if user limit is exceeded or tenant is invalid
      */
+    @Override
     @Transactional
-    public void createEmployee(CreateEmployeeRequest rq) {
-
+    public UserTenant save(UserTenant entity) {
         String schema = TenantCtx.getTenant();
         Tenant tenant = tenantRepository.findBySchemaName(schema)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
 
         validateMaxUsersLimit(tenant);
+
         String rawPassword = generateRandomPassword(10);
 
         User user = User.builder()
-                .email(rq.getEmail())
-                .username(rq.getEmail())  // username = email për konsistencë
+                .email(entity.getUser().getEmail())
+                .username(entity.getUser().getEmail())
                 .passwordHash(passwordEncoder.encode(rawPassword))
                 .role("TENANT_USER")
                 .tenantId(tenant.getTenantId())
                 .build();
         userRepository.save(user);
 
-        Address address = Address.builder()
-                .country(rq.getCountry())
-                .city(rq.getCity())
-                .street(rq.getStreet())
-                .zip(rq.getZip())
-                .build();
-        Address savedAddress = addressRepository.save(address);
+        entity.setUser(user);
+        entity.setTenant(tenant);
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setProfilePhoto(new byte[0]);
 
-        UserTenant userTenant = UserTenant.builder()
-                .user(user)
-                .tenant(tenant)
-                .firstName(rq.getFirstName())
-                .lastName(rq.getLastName())
-                .phone(rq.getPhone())
-                .gender(rq.getGender())
-                .address(savedAddress)
-                .createdAt(LocalDateTime.now())
-                .profilePhoto(new byte[0])
-                .build();
-        repo.save(userTenant);
-
-        Department department = null;
-        Position position = null;
-
-        if (rq.getDepartmentName() != null && !rq.getDepartmentName().isBlank()) {
-            department = departmentRepo
-                    .findByName(rq.getDepartmentName())
-                    .orElseGet(() -> departmentRepo.save(
-                            Department.builder()
-                                    .name(rq.getDepartmentName())
-                                    .createdAt(LocalDateTime.now())
-                                    .build()
-                    ));
-        }
-
-        if (rq.getPositionTitle() != null && !rq.getPositionTitle().isBlank()) {
-            Position newPosition = Position.builder()
-                    .title(rq.getPositionTitle())
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
-            if (department != null) {
-                newPosition.setDepartment(department);
-            }
-
-            position = positionRepo
-                    .findByTitle(rq.getPositionTitle())
-                    .orElseGet(() -> positionRepo.save(newPosition));
-        }
-
-        Contract newContract = Contract.builder()
-                .userTenant(userTenant)
-                .position(position)
-                .salary(new BigDecimal(rq.getSalary()))
-                .contractType(rq.getContractType())
-                .startDate(LocalDate.now())
-                .endDate(LocalDate.parse(rq.getContractEndDate()))
-                .createdAt(LocalDateTime.now())
-                .build();
-        contractRepo.save(newContract);
+        UserTenant savedUserTenant = repo.save(entity);
 
         EmailSenderService.sendVerificationEmail(
-                rq.getEmail(),
+                user.getEmail(),
                 "Welcome to NexHR",
-                "Dear " + rq.getFirstName() + ",\n\n" +
-                        "Welcome to the company! Your temporary login password is:\n\n" +
-                        rawPassword + "\n\n" +
-                        "Please log in and change it as soon as possible.\n\n" +
-                        "Regards,\nNexHR Team"
+                "Dear " + entity.getFirstName() + ",\n\n" +
+                        "Your temporary password is:\n\n" + rawPassword +
+                        "\n\nPlease log in and change it as soon as possible.\n\nRegards,\nNexHR Team"
         );
+
+        return savedUserTenant;
     }
+
 
     /**
      * Generates a random password string with a given length.
@@ -293,5 +255,24 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
 
         entity.setProfilePhoto(file.getBytes());  // Set the profile photo as a byte array
         repo.save(entity);  // Save the updated user tenant entity
+    }
+
+    public boolean updateBasicInfo(UserTenantUpdateDTO dto) {
+        Optional<UserTenant> optionalUserTenant = repo.findById(dto.getUserTenantId());
+        Optional<Address> optionalAddress = addressRepository.findById(dto.getAddressId());
+
+        if (optionalUserTenant.isEmpty() || optionalAddress.isEmpty()) {
+            return false;
+        }
+
+        UserTenant ut = optionalUserTenant.get();
+        ut.setFirstName(dto.getFirstName());
+        ut.setLastName(dto.getLastName());
+        ut.setPhone(dto.getPhone());
+        ut.setGender(dto.getGender());
+        ut.setAddress(optionalAddress.get());
+
+        repo.save(ut);
+        return true;
     }
 }

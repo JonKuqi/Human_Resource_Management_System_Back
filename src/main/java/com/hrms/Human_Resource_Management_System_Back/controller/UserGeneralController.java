@@ -7,6 +7,7 @@ import com.hrms.Human_Resource_Management_System_Back.model.dto.VerifyRequest;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
 import com.hrms.Human_Resource_Management_System_Back.service.UserGeneralService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,10 @@ public class UserGeneralController extends BaseController<UserGeneral, Integer> 
      * @param request the registration request containing user details
      * @return a {@link ResponseEntity} containing the authentication response
      */
+    @Operation(
+            summary = "Register a general user",
+            description = "Registers a new user and returns an authentication token upon success."
+    )
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterGeneralRequest request) {
         return ResponseEntity.ok(userGeneralService.register(request));
@@ -73,6 +78,10 @@ public class UserGeneralController extends BaseController<UserGeneral, Integer> 
      * @param request the request containing the verification code and user email
      * @return a {@link ResponseEntity} containing the result of the email verification process
      */
+    @Operation(
+            summary = "Verify user email",
+            description = "Verifies the email of a registered user using a verification code."
+    )
     @PostMapping("/verify")
     public ResponseEntity<?> verifyEmail(@RequestBody VerifyRequest request) {
         return userGeneralService.verifyEmail(request);
@@ -88,6 +97,10 @@ public class UserGeneralController extends BaseController<UserGeneral, Integer> 
      * @param body a map containing the user's email address
      * @return a {@link ResponseEntity} indicating the result of the resend process
      */
+    @Operation(
+            summary = "Resend email verification code",
+            description = "Sends a new verification code to the specified email address."
+    )
     @PostMapping("/resend")
     public ResponseEntity<?> resendVerificationCode(@RequestBody Map<String, String> body) {
         String email = body.get("email");

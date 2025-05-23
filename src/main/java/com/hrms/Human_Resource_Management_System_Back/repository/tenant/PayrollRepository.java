@@ -11,10 +11,22 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for managing {@link Payroll} entities.
+ * <p>
+ * This repository extends {@link BaseUserSpecificRepository} and provides role-based access
+ * control (RBAC) methods for querying and modifying payroll data.
+ * </p>
+ */
 @Repository
-public interface PayrollRepository
-        extends BaseUserSpecificRepository<Payroll, Integer> {
+public interface PayrollRepository extends BaseUserSpecificRepository<Payroll, Integer> {
 
+    /**
+     * Retrieves all payroll records for users who have **every** role specified in the provided list.
+     *
+     * @param roles the list of required role names
+     * @return a list of {@link Payroll} entities matching the specified access control
+     */
     @Query("""
        SELECT p
        FROM Payroll p
@@ -26,6 +38,13 @@ public interface PayrollRepository
     """)
     List<Payroll> findAllRole(@Param("roles") List<String> roles);
 
+    /**
+     * Retrieves a payroll record by its ID, only if the associated user has **every** role specified.
+     *
+     * @param id    the payroll ID
+     * @param roles the list of required roles to authorize access
+     * @return an {@link Optional} containing the {@link Payroll} if found and permitted
+     */
     @Query("""
        SELECT p
        FROM Payroll p
@@ -39,6 +58,12 @@ public interface PayrollRepository
     Optional<Payroll> findByIdRole(@Param("id") Integer id,
                                    @Param("roles") List<String> roles);
 
+    /**
+     * Deletes a payroll record by its ID, only if the associated user has **every** role specified.
+     *
+     * @param id    the ID of the payroll to delete
+     * @param roles the list of required roles for deletion authorization
+     */
     @Override
     @Modifying
     @Transactional

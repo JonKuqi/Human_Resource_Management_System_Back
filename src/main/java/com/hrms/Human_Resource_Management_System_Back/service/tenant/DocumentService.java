@@ -1,15 +1,16 @@
-package com.hrms.Human_Resource_Management_System_Back.service;
+package com.hrms.Human_Resource_Management_System_Back.service.tenant;
 
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.Document;
 import com.hrms.Human_Resource_Management_System_Back.repository.BaseRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.DocumentRepository;
+import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
 @Service
 @AllArgsConstructor
-public class DocumentService extends BaseService<Document, Integer>{
+public class DocumentService extends BaseService<Document, Integer> {
 
     private final DocumentRepository repository;
 

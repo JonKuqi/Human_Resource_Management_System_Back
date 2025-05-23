@@ -30,6 +30,7 @@ import java.sql.Timestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class User{ //makes it an Spring boot object
 
     @Id

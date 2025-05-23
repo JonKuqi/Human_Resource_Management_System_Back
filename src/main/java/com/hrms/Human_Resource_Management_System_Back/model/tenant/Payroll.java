@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,19 +11,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
 /**
  * Represents a payroll entity in the system.
  * <p>
  * - payrollId: The unique identifier for the payroll.
- * - userTenant: The user tenant associated with the payroll.
+ * - userTenant: The user tenant (employee) associated with this payroll.
  * - payPeriodStart: The start date of the pay period.
  * - payPeriodEnd: The end date of the pay period.
- * - baseSalary: The base salary for the employee during the pay period.
- * - bonuses: The bonuses given to the employee during the pay period.
- * - deductions: The deductions made from the employee's salary.
- * - netPay: The net pay after bonuses and deductions.
- * - paymentDate: The date the payroll was processed and paid.
+ * - baseSalary: The gross salary allocated to the employee.
+ * - bonuses: Additional bonus amount given during the pay period.
+ * - deductions: Amount deducted from the base salary (e.g., taxes, penalties).
+ * - netPay: Final net amount paid after applying bonuses and deductions.
+ * - paymentDate: The date on which the payment was processed.
  * - createdAt: The timestamp when the payroll record was created.
  * </p>
  */
@@ -32,7 +32,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Payroll {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payroll_id")

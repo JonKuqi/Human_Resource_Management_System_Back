@@ -1,19 +1,32 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Represents an evaluation form used to assess an employee's performance.
+ * <p>
+ * This entity captures the evaluator, the employee being evaluated, the questions assigned,
+ * the status of the form, and the answers submitted. It acts as the central structure
+ * for a performance evaluation process.
+ * </p>
+ */
 @Entity
 @Table(name = "evaluation_form")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class EvaluationForm {
 
     @Id

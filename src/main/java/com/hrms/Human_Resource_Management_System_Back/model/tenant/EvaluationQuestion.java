@@ -1,14 +1,27 @@
 package com.hrms.Human_Resource_Management_System_Back.model.tenant;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
-import lombok.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+/**
+ * Represents a single question that is part of an evaluation form.
+ * <p>
+ * Each question belongs to one {@link EvaluationForm} and contains the question text.
+ * </p>
+ */
 @Entity
 @Table(name = "evaluation_question")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class EvaluationQuestion {
 
     @Id
