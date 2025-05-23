@@ -8,6 +8,8 @@ import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTena
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -75,6 +77,7 @@ public class UserRoleService extends BaseService<UserRole, Integer> {
      * @param userTenantId the ID of the user tenant whose roles are to be fetched
      * @return a list of {@link UserRole} associated with the user tenant ID
      */
+    @Cacheable(value = "user-roles", key = "#userTenantId")
     public List<UserRole> findByUserTenantId(Integer userTenantId) {
         return repo.findAllByUserTenant_UserTenantId(userTenantId);
     }
@@ -90,6 +93,7 @@ public class UserRoleService extends BaseService<UserRole, Integer> {
      * @param roleIds a list of role IDs to assign to the user tenant
      */
     @Transactional
+    @CacheEvict(value = "user-roles", key = "#userTenantId")
     public void replaceRoles(Integer userTenantId, List<Integer> roleIds) {
         // Delete existing roles for the user tenant
         repo.deleteByUserTenantId(userTenantId);

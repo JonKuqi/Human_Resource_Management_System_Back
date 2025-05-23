@@ -8,6 +8,8 @@ import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RolePerm
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RoleRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,11 +56,18 @@ public class RoleService extends BaseService<Role, Integer> {
         return repo;
     }
 
+    @Override
+    @Cacheable("roles")
+    public List<Role> findAll() {
+        return super.findAll();
+    }
+
     /**
      * Saves a role and, if it’s brand-new, attaches the starter permissions.
      */
     @Override
     @Transactional
+    @CacheEvict(value = "roles", allEntries = true)
     public Role save(Role entity) {
 
         boolean isNew = (entity.getRoleId() == null);
@@ -84,5 +93,11 @@ public class RoleService extends BaseService<Role, Integer> {
             });
         }
         return saved;
+    }
+
+    @Override
+    @CacheEvict(value = "roles", allEntries = true)
+    public void deleteById(Integer id) {
+        super.deleteById(id);
     }
 }
