@@ -9,6 +9,13 @@ spring:
     password: 1234
     driver-class-name: org.postgresql.Driver
 
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   jpa:
     transaction-manager: transactionManager
