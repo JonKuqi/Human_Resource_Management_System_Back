@@ -6,15 +6,14 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+/**
+ * Repository interface for managing {@link Document} entities within tenant schemas.
+ * <p>
+ * This repository extends {@link BaseRepository} and provides CRUD operations for document data,
+ * such as CVs and other attachments associated with job applications.
+ * </p>
+ */
 public interface DocumentRepository extends BaseRepository<Document, Integer> {
-
-//    @Modifying
-    @Transactional
-    @Query(
-            value = "INSERT INTO document (file_name, content_type, data) VALUES (?1, ?2, ?3) RETURNING *",
-            nativeQuery = true
-    )
-    Document insertAndReturn(String fileName, String contentType, byte[] data);
 
 
 }

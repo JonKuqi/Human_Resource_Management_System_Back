@@ -1,28 +1,57 @@
 package com.hrms.Human_Resource_Management_System_Back.service.tenant;
 
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.LeaveRequest;
-import com.hrms.Human_Resource_Management_System_Back.model.tenant.Notification;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.LeaveRequestRepository;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
-import com.hrms.Human_Resource_Management_System_Back.service.BaseUserSpecificService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+/**
+ * Service class for managing leave requests within a tenant.
+ * <p>
+ * This service handles business logic for creating and updating {@link LeaveRequest} entities.
+ * It extends {@link BaseService} to reuse generic CRUD functionality and adds validations specific
+ * to leave request operations, such as conflict detection and default value initialization.
+ * </p>
+ */
 @Service
 @AllArgsConstructor
 public class LeaveRequestService extends BaseService<LeaveRequest, Integer> {
+
+    /**
+     * The repository responsible for performing database operations on leave requests.
+     */
     private final LeaveRequestRepository repo;
 
+    /**
+     * Notification service for triggering alerts or follow-up actions (future implementation).
+     */
+    private final NotificationService notificationService;
+
+    /**
+     * Provides the specific repository implementation for leave requests.
+     *
+     * @return the {@link LeaveRequestRepository} instance
+     */
     @Override
     protected LeaveRequestRepository getRepository() {
         return repo;
     }
-    private final NotificationService notificationService;
 
+    /**
+     * Saves a leave request entity with additional business logic.
+     * <p>
+     * - Detects if the request is new and checks for date conflicts with existing leave entries.
+     * - Sets default status to "PENDING" if not provided.
+     * - Sets creation time if not already set.
+     * </p>
+     *
+     * @param leaveRequest the {@link LeaveRequest} entity to be saved
+     * @return the persisted {@link LeaveRequest}
+     * @throws IllegalArgumentException if the leave request conflicts with existing dates
+     */
     @Override
     public LeaveRequest save(LeaveRequest leaveRequest) {
         boolean isNew = (leaveRequest.getLeaveRequestId() == null);
@@ -33,7 +62,6 @@ public class LeaveRequestService extends BaseService<LeaveRequest, Integer> {
         }
 
         if (isNew) {
-            // Kontroll për konflikt
             Integer userId = leaveRequest.getUserTenant().getUserTenantId();
 
             boolean conflict = repo.existsByUserTenantUserTenantIdAndDateOverlap(
@@ -46,47 +74,16 @@ public class LeaveRequestService extends BaseService<LeaveRequest, Integer> {
                 throw new IllegalArgumentException("Leave request conflicts with existing dates.");
             }
 
-            // Vendos status në PENDING nëse nuk është dhënë
             if (leaveRequest.getStatus() == null || leaveRequest.getStatus().isBlank()) {
                 leaveRequest.setStatus("PENDING");
             }
 
-            // Vendos kohën e krijimit nëse nuk është dhënë
             if (leaveRequest.getCreatedAt() == null) {
                 leaveRequest.setCreatedAt(LocalDateTime.now());
             }
-
-            // Vendos validUntil në fund të pushimit
         }
 
         LeaveRequest saved = super.save(leaveRequest);
-
-        // Logjika e notifikimeve për status
-//        if (!isNew && existing != null && !leaveRequest.getStatus().equalsIgnoreCase(existing.getStatus())) {
-//            if ("APPROVED".equalsIgnoreCase(leaveRequest.getStatus())) {
-//                Notification notification = Notification.builder()
-//                        .title("Leave Request Approved")
-//                        .description("Your leave request from " + leaveRequest.getStartDate() + " to " + leaveRequest.getEndDate() + " was approved.")
-//                        .userTenant(leaveRequest.getUserTenant())
-//                        .createdAt(LocalDateTime.now())
-//                        .expiresAt(LocalDateTime.now().plusDays(30))
-//                        .build();
-//                notificationService.save(notification);
-//            } else if ("REJECTED".equalsIgnoreCase(leaveRequest.getStatus())) {
-//                Notification notification = Notification.builder()
-//                        .title("Leave Request Rejected")
-//                        .description("Your leave request from " + leaveRequest.getStartDate() + " to " + leaveRequest.getEndDate() + " was rejected.")
-//                        .userTenant(leaveRequest.getUserTenant())
-//                        .createdAt(LocalDateTime.now())
-//                        .expiresAt(LocalDateTime.now().plusDays(30))
-//                        .build();
-//                notificationService.save(notification);
-//            }
-//        }
-
         return saved;
     }
-
-
-
 }
