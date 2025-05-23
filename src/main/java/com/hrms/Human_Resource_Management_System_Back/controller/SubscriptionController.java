@@ -4,6 +4,7 @@ import com.hrms.Human_Resource_Management_System_Back.model.Subscription;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import com.hrms.Human_Resource_Management_System_Back.service.PaypalPaymentService;
 import com.hrms.Human_Resource_Management_System_Back.service.SubscriptionService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,10 @@ public class SubscriptionController extends BaseController<Subscription, Integer
         return subscriptionService;
     }
 
+    @Operation(
+            summary = "PayPal payment success handler",
+            description = "Callback endpoint for PayPal after the user approves a subscription payment."
+    )
     @GetMapping("/payments/success")
     public ResponseEntity<Void> executePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId, @RequestParam("token") String token) {
         try {
