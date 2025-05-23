@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.controller;
 
+import com.hrms.Human_Resource_Management_System_Back.model.UserTenantUpdateDTO;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.CreateEmployeeRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterTenantUserRequest;
@@ -91,11 +92,18 @@ public class UserTenantController extends BaseUserSpecificController<UserTenant,
             @RequestPart("file") MultipartFile file) {
 
         try {
-            service.updateProfilePhoto(id, file);          // delegate to service
+            service.updateProfilePhoto(id, file);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateUserTenantInfo(@ModelAttribute UserTenantUpdateDTO dto) {
+        boolean updated = service.updateBasicInfo(dto);
+        return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+
 
 }
