@@ -68,11 +68,7 @@ public class UserTenantController extends BaseUserSpecificController<UserTenant,
      * @param rq the request payload containing employee information
      * @return {@link ResponseEntity} with status 200 OK upon success
      */
-    @PostMapping("/employees")
-    public ResponseEntity<Void> createEmployee(@RequestBody CreateEmployeeRequest rq) {
-        service.createEmployee(rq);
-        return ResponseEntity.ok().build();
-    }
+
 
     /**
      * Uploads or replaces the profile photo of a user tenant.
