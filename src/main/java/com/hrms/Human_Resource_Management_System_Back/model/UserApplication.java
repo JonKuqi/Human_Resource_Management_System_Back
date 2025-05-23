@@ -10,6 +10,16 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+
+/**
+ * Represents a user application for a job listing in the public schema.
+ * <p>
+ * - userApplicationId: The unique identifier for the user application.
+ * - user: The user who applied to the job.
+ * - jobListing: The job listing to which the user applied.
+ * - createdAt: The timestamp indicating when the application was submitted.
+ * </p>
+ */
 @Entity
 @Table(name = "user_application", schema = "public")
 @Data
