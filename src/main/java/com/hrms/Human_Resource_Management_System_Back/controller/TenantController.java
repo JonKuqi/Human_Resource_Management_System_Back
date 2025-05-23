@@ -7,6 +7,7 @@ import com.hrms.Human_Resource_Management_System_Back.model.dto.TenantRegistrati
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import com.hrms.Human_Resource_Management_System_Back.service.TenantOnboardingService;
 import com.hrms.Human_Resource_Management_System_Back.service.TenantService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,6 +67,10 @@ public class TenantController extends BaseController<Tenant, Integer> {
      * @param rq the registration request containing tenant details
      * @return a {@link ResponseEntity} with a status of ACCEPTED if the tenant registration is successful
      */
+    @Operation(
+            summary = "Register a new tenant",
+            description = "Registers a new tenant and sends a verification email to the provided email address."
+    )
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody TenantRegistrationRequest rq) {
         onboardingService.registerTenant(rq);
@@ -82,6 +87,10 @@ public class TenantController extends BaseController<Tenant, Integer> {
      * @param rq the owner creation request containing necessary information for setting up the owner
      * @return an {@link AuthenticationResponse} containing authentication details after successful onboarding
      */
+    @Operation(
+            summary = "Onboard tenant owner after email verification",
+            description = "Completes onboarding after email verification and returns an authentication response."
+    )
     @PostMapping("/onboard")
     public ResponseEntity<AuthenticationResponse> onboard(@RequestBody OwnerCreationRequest rq) {
         AuthenticationResponse res = onboardingService.createOwnerAfterVerification(rq);

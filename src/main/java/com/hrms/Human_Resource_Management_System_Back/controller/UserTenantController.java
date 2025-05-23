@@ -1,11 +1,13 @@
 package com.hrms.Human_Resource_Management_System_Back.controller;
 
+import com.hrms.Human_Resource_Management_System_Back.model.UserTenantUpdateDTO;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.CreateEmployeeRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.RegisterTenantUserRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserTenant;
 import com.hrms.Human_Resource_Management_System_Back.service.tenant.UserTenantService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/tenant/user-tenant")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class UserTenantController extends BaseUserSpecificController<UserTenant, Integer> {
 
     /**
@@ -51,6 +54,8 @@ public class UserTenantController extends BaseUserSpecificController<UserTenant,
      * @param rq the registration request containing user details
      * @return a {@link ResponseEntity} containing the authentication response
      */
+    @Operation(summary = "Register a user tenant", description = "Registers a new user in the current tenant and returns an authentication response.")
+
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterTenantUserRequest rq) {
@@ -91,11 +96,18 @@ public class UserTenantController extends BaseUserSpecificController<UserTenant,
             @RequestPart("file") MultipartFile file) {
 
         try {
-            service.updateProfilePhoto(id, file);          // delegate to service
+            service.updateProfilePhoto(id, file);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateUserTenantInfo(@ModelAttribute UserTenantUpdateDTO dto) {
+        boolean updated = service.updateBasicInfo(dto);
+        return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+
 
 }

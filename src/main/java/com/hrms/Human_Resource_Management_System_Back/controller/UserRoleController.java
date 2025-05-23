@@ -64,13 +64,13 @@ public class UserRoleController extends BaseController<UserRole, Integer> {
      * @param roleIds a list of role IDs to associate with the user tenant
      * @return a {@link ResponseEntity} with a 204 status on success
      */
-    @PutMapping("/replace/{userTenantId}")
-    public ResponseEntity<Void> replaceUserRoles(
-            @PathVariable Integer userTenantId,
-            @RequestBody List<Integer> roleIds) {
-
-        svc.replaceRoles(userTenantId, roleIds);
-        return ResponseEntity.noContent().build();
-    }
+//    @PutMapping("/replace/{userTenantId}")
+//    public ResponseEntity<Void> replaceUserRoles(
+//            @PathVariable Integer userTenantId,
+//            @RequestBody List<Integer> roleIds) {
+//
+//        svc.replaceRoles(userTenantId, roleIds);
+//        return ResponseEntity.noContent().build();
+//    }
 
 }

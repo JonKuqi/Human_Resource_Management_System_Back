@@ -5,6 +5,7 @@ import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationRe
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.ChangePasswordRequest;
 import com.hrms.Human_Resource_Management_System_Back.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,10 @@ public class UserController extends BaseController<User, Integer> {
      * @param request the authentication request containing the user's credentials
      * @return a {@link ResponseEntity} containing the authentication response
      */
+    @Operation(
+            summary = "Authenticate user",
+            description = "Authenticates a user and returns an authentication response with a JWT token."
+    )
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
@@ -67,6 +72,10 @@ public class UserController extends BaseController<User, Integer> {
      * @param req the change password request containing the user's current and new password
      * @return a {@link ResponseEntity} with a 204 status on success
      */
+    @Operation(
+            summary = "Change user password",
+            description = "Changes the password for the user. Requires the old password and new password."
+    )
     @PostMapping("/change-password")
     public ResponseEntity<Void> changePassword(
             @Valid @RequestBody ChangePasswordRequest req) {

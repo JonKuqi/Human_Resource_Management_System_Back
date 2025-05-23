@@ -35,6 +35,7 @@ public class Notification {
     private Integer notificationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "user_tenant_id", nullable = false)
     private UserTenant userTenant;
 
