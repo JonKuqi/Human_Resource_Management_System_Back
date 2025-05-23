@@ -3,7 +3,7 @@ name: CI - Test and Build Spring Boot
 on:
   push:
     branches:
-      - deployment-test
+      - deployment-production
 
 jobs:
   test:
