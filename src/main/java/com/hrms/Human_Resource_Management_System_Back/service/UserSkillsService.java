@@ -50,7 +50,7 @@ public class UserSkillsService extends BaseService<UserSkills, Integer> {
         Integer skillId = incoming.getSkill().getSkillId();
 
         Optional<UserSkills> existingOpt =
-                userSkillsRepository.findByUserGeneralIdAndSkillId(userGeneralId, skillId);
+                userSkillsRepository.findByUserGeneral_UserGeneralIdAndSkill_SkillId(userGeneralId, skillId);
 
         if (existingOpt.isPresent()) {
             UserSkills existing = existingOpt.get();

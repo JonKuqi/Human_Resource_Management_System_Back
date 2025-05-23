@@ -175,99 +175,47 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
      * Sends a verification email with the generated temporary password to the employee.
      * </p>
      *
-     * @param rq the request containing employee registration data
+     * @param entity the request containing employee registration data
      * @throws RuntimeException if user limit is exceeded or tenant is invalid
      */
+    @Override
     @Transactional
-    public void createEmployee(CreateEmployeeRequest rq) {
-
+    public UserTenant save(UserTenant entity) {
         String schema = TenantCtx.getTenant();
         Tenant tenant = tenantRepository.findBySchemaName(schema)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
 
         validateMaxUsersLimit(tenant);
+
         String rawPassword = generateRandomPassword(10);
 
         User user = User.builder()
-                .email(rq.getEmail())
-                .username(rq.getEmail())  // username = email për konsistencë
+                .email(entity.getUser().getEmail())
+                .username(entity.getUser().getEmail())
                 .passwordHash(passwordEncoder.encode(rawPassword))
                 .role("TENANT_USER")
                 .tenantId(tenant.getTenantId())
                 .build();
         userRepository.save(user);
 
-        Address address = Address.builder()
-                .country(rq.getCountry())
-                .city(rq.getCity())
-                .street(rq.getStreet())
-                .zip(rq.getZip())
-                .build();
-        Address savedAddress = addressRepository.save(address);
+        entity.setUser(user);
+        entity.setTenant(tenant);
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setProfilePhoto(new byte[0]);
 
-        UserTenant userTenant = UserTenant.builder()
-                .user(user)
-                .tenant(tenant)
-                .firstName(rq.getFirstName())
-                .lastName(rq.getLastName())
-                .phone(rq.getPhone())
-                .gender(rq.getGender())
-                .address(savedAddress)
-                .createdAt(LocalDateTime.now())
-                .profilePhoto(new byte[0])
-                .build();
-        repo.save(userTenant);
-
-        Department department = null;
-        Position position = null;
-
-        if (rq.getDepartmentName() != null && !rq.getDepartmentName().isBlank()) {
-            department = departmentRepo
-                    .findByName(rq.getDepartmentName())
-                    .orElseGet(() -> departmentRepo.save(
-                            Department.builder()
-                                    .name(rq.getDepartmentName())
-                                    .createdAt(LocalDateTime.now())
-                                    .build()
-                    ));
-        }
-
-        if (rq.getPositionTitle() != null && !rq.getPositionTitle().isBlank()) {
-            Position newPosition = Position.builder()
-                    .title(rq.getPositionTitle())
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
-            if (department != null) {
-                newPosition.setDepartment(department);
-            }
-
-            position = positionRepo
-                    .findByTitle(rq.getPositionTitle())
-                    .orElseGet(() -> positionRepo.save(newPosition));
-        }
-
-        Contract newContract = Contract.builder()
-                .userTenant(userTenant)
-                .position(position)
-                .salary(new BigDecimal(rq.getSalary()))
-                .contractType(rq.getContractType())
-                .startDate(LocalDate.now())
-                .endDate(LocalDate.parse(rq.getContractEndDate()))
-                .createdAt(LocalDateTime.now())
-                .build();
-        contractRepo.save(newContract);
+        UserTenant savedUserTenant = repo.save(entity);
 
         EmailSenderService.sendVerificationEmail(
-                rq.getEmail(),
+                user.getEmail(),
                 "Welcome to NexHR",
-                "Dear " + rq.getFirstName() + ",\n\n" +
-                        "Welcome to the company! Your temporary login password is:\n\n" +
-                        rawPassword + "\n\n" +
-                        "Please log in and change it as soon as possible.\n\n" +
-                        "Regards,\nNexHR Team"
+                "Dear " + entity.getFirstName() + ",\n\n" +
+                        "Your temporary password is:\n\n" + rawPassword +
+                        "\n\nPlease log in and change it as soon as possible.\n\nRegards,\nNexHR Team"
         );
+
+        return savedUserTenant;
     }
+
 
     /**
      * Generates a random password string with a given length.
