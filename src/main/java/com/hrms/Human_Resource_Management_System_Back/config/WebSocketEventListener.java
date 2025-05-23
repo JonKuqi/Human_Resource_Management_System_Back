@@ -13,8 +13,9 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 /**
  * Event listener component for handling WebSocket connection lifecycle events.
  * <p>
- * This component listens for WebSocket disconnection events and broadcasts a leave message to all connected clients,
- * notifying them that a user has disconnected from the public chat.
+ * This component listens for WebSocket disconnection events and broadcasts a leave message to
+ * all connected clients within the same tenant. It ensures that real-time chat communication
+ * is isolated per tenant, so that users from one tenant do not receive events from another.
  * </p>
  */
 @Component
@@ -24,35 +25,41 @@ public class WebSocketEventListener {
 
     /**
      * Template for sending messages through WebSocket to specified destinations.
-     * Used to broadcast messages when a user disconnects.
+     * Used to broadcast messages within the appropriate tenant topic when a user disconnects.
      */
     private final SimpMessageSendingOperations messagingTemplate;
 
     /**
      * Handles WebSocket session disconnection events.
      * <p>
-     * This method is triggered when a user disconnects from a WebSocket session. It retrieves the username from the
-     * session attributes (if present), logs the disconnection, constructs a {@link ChatMessage} of type {@link MessageType#LEAVE},
-     * and sends the message to the "/topic/public" topic to notify other users.
+     * This method is triggered when a user disconnects from a WebSocket session. It retrieves
+     * the username and tenant ID from the session attributes, logs the disconnection,
+     * constructs a {@link ChatMessage} of type {@link MessageType#LEAVE},
+     * and sends the message to the corresponding tenant-specific topic
+     * (e.g., <code>/topic/tenant-{tenant}</code>) to notify other users from the same tenant.
      * </p>
      *
-     * @param event the {@link SessionDisconnectEvent} triggered upon a user's disconnection.
+     * @param event the {@link SessionDisconnectEvent} triggered upon a user's disconnection
      */
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
+        String tenant = (String) headerAccessor.getSessionAttributes().get("tenant"); // ndrysho nga Integer në String
 
-        if (username != null) {
+        if (username != null && tenant != null) {
             log.info("User disconnected: {}", username);
 
             var chatMessage = ChatMessage.builder()
                     .type(MessageType.LEAVE)
                     .sender(username)
+                    .tenant(tenant)
                     .build();
 
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
+            messagingTemplate.convertAndSend("/topic/tenant-" + tenant, chatMessage);
         }
     }
+
+
 }
