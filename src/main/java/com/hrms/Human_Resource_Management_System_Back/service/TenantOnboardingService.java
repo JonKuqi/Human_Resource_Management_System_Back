@@ -3,16 +3,20 @@ package com.hrms.Human_Resource_Management_System_Back.service;
 
 import com.hrms.Human_Resource_Management_System_Back.model.Address;
 import com.hrms.Human_Resource_Management_System_Back.model.Tenant;
+import com.hrms.Human_Resource_Management_System_Back.model.TenantPermission;
 import com.hrms.Human_Resource_Management_System_Back.model.User;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.AuthenticationResponse;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.OwnerCreationRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.TenantRegistrationRequest;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.Role;
+import com.hrms.Human_Resource_Management_System_Back.model.tenant.RolePermission;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserRole;
 import com.hrms.Human_Resource_Management_System_Back.model.tenant.UserTenant;
 import com.hrms.Human_Resource_Management_System_Back.repository.AddressRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.TenantPermissionRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.TenantRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.UserRepository;
+import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RolePermissionRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.RoleRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserRoleRepository;
 import com.hrms.Human_Resource_Management_System_Back.repository.tenant.UserTenantRepository;
@@ -35,6 +39,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -62,6 +67,8 @@ public class TenantOnboardingService {
     private final UserRoleRepository userRoleRepo;
     private final RoleRepository roleRepo;
     private final PasswordEncoder passwordEncoder;
+    private final TenantPermissionRepository tenantPermissionRepo;
+    private final RolePermissionRepository rolePermissionRepo;
 
     private static String REG_TYPE = "TENANT_REG";
 
@@ -208,7 +215,32 @@ public class TenantOnboardingService {
                 .build();
         userRoleRepo.save(ur);
 
-        // 11. Generate and return the JWT token for the user
+        // 11. automatically assigne this permission to the owner role and subscription
+        List<String[]> permissionsToAssign = List.of(
+                new String[]{"POST", "/api/v1/tenant/user-role"},
+                new String[]{"POST", "/api/v1/tenant/subscriptions/payments/create"}
+        );
+
+        for (String[] perm : permissionsToAssign) {
+            String verb = perm[0];
+            String resource = perm[1];
+
+            TenantPermission tp = tenantPermissionRepo
+                    .findByResourceAndVerb(resource, verb)
+                    .orElseThrow(() -> new RuntimeException("Permission not found: " + verb + " " + resource));
+
+            RolePermission rp = RolePermission.builder()
+                    .role(role)
+                    .tenantPermission(tp)
+                    .targetRoleId(role)
+                    .build();
+
+            rolePermissionRepo.save(rp);
+        }
+
+
+
+        // 12. Generate and return the JWT token for the user
         CustomUserDetails userDetails = new CustomUserDetails(ut.getUser().getUserId(), ut, t.getSchemaName());
         Map<String, Object> claims = Map.of(
                 "tenant", userDetails.getTenant(),
