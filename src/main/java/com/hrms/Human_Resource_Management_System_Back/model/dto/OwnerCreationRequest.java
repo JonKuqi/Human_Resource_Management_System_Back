@@ -1,5 +1,6 @@
 package com.hrms.Human_Resource_Management_System_Back.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
@@ -17,6 +18,7 @@ import lombok.Data;
  * </p>
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OwnerCreationRequest {
     private String token;       // the verification JWT
     private String username;

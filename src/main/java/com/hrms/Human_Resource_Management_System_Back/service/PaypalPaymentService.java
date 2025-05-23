@@ -36,7 +36,34 @@ public class PaypalPaymentService {
     private final TenantSubscriptionRepository tenantSubscriptionRepository;
     private final JwtService jwtService;
 
+    @Transactional
     public PaymentResponseDto createPayment(PaymentRequestDto dto) {
+        String tenantSchema = TenantCtx.getTenant();
+
+        Tenant tenant = tenantRepository.findBySchemaName(tenantSchema)
+                .orElseThrow(() -> new RuntimeException("Tenant not found"));
+
+        List<TenantSubscription> subscriptions = tenantSubscriptionRepository.findAllByTenantOrderByCreatedAtDesc(tenant);
+
+        if (!subscriptions.isEmpty()) {
+            TenantSubscription latestSub = subscriptions.get(0);
+            Subscription current = latestSub.getSubscription();
+            Subscription next = subscriptionRepository.findById(dto.getSubscriptionId())
+                    .orElseThrow(() -> new RuntimeException("Subscription not found"));
+
+            boolean isActive = latestSub.getEndDate() != null && latestSub.getEndDate().isAfter(LocalDate.now());
+
+            if (isActive) {
+                if (current.getSubscriptionId().equals(next.getSubscriptionId())) {
+                    throw new RuntimeException("You already have an active subscription for this plan until " + latestSub.getEndDate());
+                }
+
+                if (next.getMaxUsers() <= current.getMaxUsers()) {
+                    throw new RuntimeException("You already have a better or equal plan active until " + latestSub.getEndDate());
+                }
+            }
+        }
+
         Subscription plan = subscriptionRepository.findById(dto.getSubscriptionId())
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
 
@@ -99,8 +126,6 @@ public class PaypalPaymentService {
 
         try {
             Payment executedPayment = payment.execute(apiContext, paymentExecution);
-            System.out.println("Payment executed: " + executedPayment.getId());
-
             String rawToken = executedPayment.getTransactions().get(0).getCustom();
             String decodedToken = URLDecoder.decode(rawToken, StandardCharsets.UTF_8);
 
@@ -121,24 +146,34 @@ public class PaypalPaymentService {
 
     private void createTenantSubscription(Subscription subscription) {
         String schema = TenantCtx.getTenant();
-
         Tenant tenant = tenantRepository.findBySchemaName(schema)
                 .orElseThrow(() -> new RuntimeException("Tenant not found"));
 
-        TenantSubscription tenantSubscription = TenantSubscription.builder()
-                .tenant(tenant)
-                .subscription(subscription)
-                .startDate(LocalDate.now())
-                .endDate(LocalDate.now().plusMonths(1))
-                .status(SubscriptionStatus.ACTIVE.name())
-                .createdAt(LocalDateTime.now())
-                .build();
+        List<TenantSubscription> subscriptions = tenantSubscriptionRepository
+                .findAllByTenantOrderByCreatedAtDesc(tenant);
 
-        tenantSubscriptionRepository.save(tenantSubscription);
+        if (!subscriptions.isEmpty()) {
+            TenantSubscription sub = subscriptions.get(0);
+            sub.setSubscription(subscription);
+            sub.setStartDate(LocalDate.now());
+            sub.setEndDate(LocalDate.now().plusMonths(1));
+            sub.setStatus(SubscriptionStatus.ACTIVE.name());
+            sub.setCreatedAt(LocalDateTime.now());
+            tenantSubscriptionRepository.save(sub);
+        } else {
+            TenantSubscription newSub = TenantSubscription.builder()
+                    .tenant(tenant)
+                    .subscription(subscription)
+                    .startDate(LocalDate.now())
+                    .endDate(LocalDate.now().plusMonths(1))
+                    .status(SubscriptionStatus.ACTIVE.name())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            tenantSubscriptionRepository.save(newSub);
+        }
     }
 
     public Optional<TenantSubscription> getActiveSubscription(String schema) {
         return tenantSubscriptionRepository.findActiveSubscription(schema);
     }
-
 }
