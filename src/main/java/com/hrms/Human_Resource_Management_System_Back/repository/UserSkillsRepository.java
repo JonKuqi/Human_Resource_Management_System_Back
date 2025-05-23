@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface UserSkillsRepository extends BaseRepository<UserSkills, Integer> {
     List<UserSkills> findByUserGeneral_UserGeneralId(Integer userGeneralId);
 
+    Optional<UserSkills> findByUserGeneral_UserGeneralIdAndSkill_SkillId(Integer userGeneralId, Integer skillId);
+
 }
