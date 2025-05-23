@@ -19,6 +19,7 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
+
 public class OwnerCreationRequest {
     private String token;       // the verification JWT
     private String username;

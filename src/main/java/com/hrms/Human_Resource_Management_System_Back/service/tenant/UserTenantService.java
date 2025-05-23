@@ -27,6 +27,7 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -137,20 +138,30 @@ public class UserTenantService extends BaseUserSpecificService<UserTenant, Integ
      * @throws RuntimeException if the user limit is exceeded
      */
     private void validateMaxUsersLimit(Tenant tenant) {
-        TenantSubscription tenantSubscription = tenantSubscriptionRepository.findByTenant(tenant)
-                .orElseThrow(() -> new RuntimeException("Subscription not found for tenant"));
+        List<TenantSubscription> subscriptions = tenantSubscriptionRepository.findAllByTenantOrderByCreatedAtDesc(tenant);
 
-        Subscription subscription = tenantSubscription.getSubscription();
+        if (subscriptions.isEmpty()) {
+            throw new RuntimeException("Subscription not found for tenant");
+        }
 
+        TenantSubscription latest = subscriptions.get(0);
+
+        Subscription subscription = latest.getSubscription();
         Integer maxUsers = subscription.getMaxUsers();
-        if (maxUsers == null) return;  // No limit
 
-        int currentUsers =  (int) repo.count();
+        if (maxUsers == null) return;
+
+        int currentUsers = (int) repo.count();
 
         if (currentUsers >= maxUsers) {
-            throw new RuntimeException("Maximum user limit reached for your subscription plan (" + maxUsers + " users allowed).");
+            throw new RuntimeException(
+                    "Maximum user limit reached for your current plan '" + subscription.getPlanName() +
+                            "' (" + maxUsers + " users allowed). Please upgrade to a higher plan."
+            );
         }
     }
+
+
 
     /**
      * Creates a new employee along with related data by User Tenant Owner.

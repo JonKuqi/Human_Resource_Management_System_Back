@@ -33,8 +33,8 @@ public class SubscriptionController extends BaseController<Subscription, Integer
     public ResponseEntity<Void> executePayment(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId, @RequestParam("token") String token) {
         try {
             paypalPaymentService.executePayment(paymentId, payerId);
-            URI redirectUri = URI.create("http://localhost:3000/tenant/subscription?status=success");
-            return ResponseEntity.status(HttpStatus.FOUND).location(redirectUri).build();  // Redirect back to app
+            URI redirectUri = URI.create("http://localhost:3000");
+            return ResponseEntity.status(HttpStatus.FOUND).location(redirectUri).build();
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }

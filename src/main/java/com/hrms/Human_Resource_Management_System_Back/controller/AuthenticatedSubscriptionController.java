@@ -25,7 +25,6 @@ public class AuthenticatedSubscriptionController{
         return ResponseEntity.ok(response);
     }
 
-
 }
 
 
