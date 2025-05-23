@@ -30,4 +30,31 @@ public class UserSkillsService extends BaseService<UserSkills, Integer> {
 
 
 
+    @Override
+    public UserSkills save(UserSkills incoming) {
+        Integer userGeneralId = incoming.getUserGeneral().getUserGeneralId();
+        Integer skillId = incoming.getSkill().getSkillId();
+
+        // Kontrollo ekzistencën me kombinim unik
+        Optional<UserSkills> existingOpt =
+                userSkillsRepository.findByUserGeneral_UserGeneralIdAndSkill_SkillId(userGeneralId, skillId);
+
+        if (existingOpt.isPresent()) {
+            UserSkills existing = existingOpt.get();
+
+            // Përditëso vetëm ato që vijnë nga frontend
+            if (incoming.getValue() != null) existing.setValue(incoming.getValue());
+            if (incoming.getIssuedAt() != null) existing.setIssuedAt(incoming.getIssuedAt());
+            if (incoming.getValidUntil() != null) existing.setValidUntil(incoming.getValidUntil());
+
+            return userSkillsRepository.save(existing); // update
+        }
+
+        // Nuk ekziston, bëje insert
+        return userSkillsRepository.save(incoming);
+    }
+
+
 }
+
+

@@ -29,23 +29,23 @@ public class UserSkillsController extends BaseController<UserSkills,Integer> {
     }
 
 
-    @PutMapping("/{id}/value")
-    public ResponseEntity<UserSkills> updateValue(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
-        Optional<UserSkills> existingOpt = userSkillsService.findById(id);
-        if (existingOpt.isPresent()) {
-            UserSkills existing = existingOpt.get();
-
-            if (updates.containsKey("value")) {
-                Integer newValue = (Integer) updates.get("value");
-                existing.setValue(newValue);
-            }
-
-            UserSkills saved = userSkillsService.save(existing);
-            return ResponseEntity.ok(saved);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @PutMapping("/{id}/value")
+//    public ResponseEntity<UserSkills> updateValue(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
+//        Optional<UserSkills> existingOpt = userSkillsService.findById(id);
+//        if (existingOpt.isPresent()) {
+//            UserSkills existing = existingOpt.get();
+//
+//            if (updates.containsKey("value")) {
+//                Integer newValue = (Integer) updates.get("value");
+//                existing.setValue(newValue);
+//            }
+//
+//            UserSkills saved = userSkillsService.save(existing);
+//            return ResponseEntity.ok(saved);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
 
 }
