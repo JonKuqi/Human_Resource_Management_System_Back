@@ -8,6 +8,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * Represents a single question that is part of an evaluation form.
+ * <p>
+ * Each question belongs to one {@link EvaluationForm} and contains the question text.
+ * </p>
+ */
 @Entity
 @Table(name = "evaluation_question")
 @Data

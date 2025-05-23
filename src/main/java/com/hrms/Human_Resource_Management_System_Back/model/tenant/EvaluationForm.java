@@ -12,6 +12,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Represents an evaluation form used to assess an employee's performance.
+ * <p>
+ * This entity captures the evaluator, the employee being evaluated, the questions assigned,
+ * the status of the form, and the answers submitted. It acts as the central structure
+ * for a performance evaluation process.
+ * </p>
+ */
 @Entity
 @Table(name = "evaluation_form")
 @Data

@@ -1,21 +1,25 @@
 package com.hrms.Human_Resource_Management_System_Back.controller;
 
-import com.hrms.Human_Resource_Management_System_Back.middleware.TenantCtx;
 import com.hrms.Human_Resource_Management_System_Back.model.Subscription;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
-import com.hrms.Human_Resource_Management_System_Back.service.JwtService;
 import com.hrms.Human_Resource_Management_System_Back.service.PaypalPaymentService;
 import com.hrms.Human_Resource_Management_System_Back.service.SubscriptionService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
 
+import java.net.URI;
+
+
+/**
+ * Controller for managing subscription plans and PayPal payment callbacks.
+ * <p>
+ * This controller provides public endpoints for interacting with available subscription
+ * plans and handling payment execution upon return from PayPal.
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/v1/public/subscriptions")
 @RequiredArgsConstructor

@@ -26,6 +26,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Service class responsible for handling PayPal-based subscription payments.
+ * <p>
+ * This class provides logic for:
+ * - Creating a PayPal payment based on a subscription plan.
+ * - Executing the payment after user approval.
+ * - Activating tenant subscriptions after successful payment.
+ * - Supporting free plan activation without PayPal interaction.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 public class PaypalPaymentService {
@@ -36,6 +46,13 @@ public class PaypalPaymentService {
     private final TenantSubscriptionRepository tenantSubscriptionRepository;
     private final JwtService jwtService;
 
+    /**
+     * Creates a PayPal payment based on the subscription details provided.
+     *
+     * @param dto The DTO containing subscription ID, currency, and billing cycle.
+     * @return A {@link PaymentResponseDto} containing the approval URL for PayPal redirection.
+     * @throws RuntimeException if tenant or subscription is not found, or if PayPal fails to return an approval URL.
+     */
     @Transactional
     public PaymentResponseDto createPayment(PaymentRequestDto dto) {
         String tenantSchema = TenantCtx.getTenant();
@@ -116,6 +133,12 @@ public class PaypalPaymentService {
         throw new RuntimeException("No approval URL returned by PayPal");
     }
 
+    /**
+     * Executes the payment after the user has approved it on PayPal.
+     *
+     * @param paymentId The ID of the PayPal payment.
+     * @param payerId   The ID of the payer returned by PayPal.
+     */
     @Transactional
     public void executePayment(String paymentId, String payerId) {
         Payment payment = new Payment();
@@ -144,6 +167,11 @@ public class PaypalPaymentService {
         }
     }
 
+    /**
+     * Creates or updates a tenant subscription in the database.
+     *
+     * @param subscription The subscription plan to assign to the tenant.
+     */
     private void createTenantSubscription(Subscription subscription) {
         String schema = TenantCtx.getTenant();
         Tenant tenant = tenantRepository.findBySchemaName(schema)
@@ -173,6 +201,13 @@ public class PaypalPaymentService {
         }
     }
 
+
+    /**
+     * Retrieves the currently active subscription for the given tenant schema.
+     *
+     * @param schema The tenant's schema identifier.
+     * @return An optional containing the active {@link TenantSubscription}, if found.
+     */
     public Optional<TenantSubscription> getActiveSubscription(String schema) {
         return tenantSubscriptionRepository.findActiveSubscription(schema);
     }
