@@ -7,6 +7,7 @@ import com.hrms.Human_Resource_Management_System_Back.model.UserApplication;
 import com.hrms.Human_Resource_Management_System_Back.model.dto.UserApplicationDto;
 import com.hrms.Human_Resource_Management_System_Back.service.BaseService;
 import com.hrms.Human_Resource_Management_System_Back.service.UserApplicationService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,11 @@ public class UserApplicationController extends BaseController<UserApplication, I
      * @return a {@link ResponseEntity} indicating a successful application submission
      * @throws IOException if the JSON parsing or file processing fails
      */
+
+    @Operation(
+            summary = "Apply to a job listing",
+            description = "Submit a user application with personal information and a CV file."
+    )
     @PostMapping(value = "/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> apply(
             @RequestPart("data") String dataJson,
