@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
  * - fileName: The name of the file (e.g., "cv.pdf").
  * - contentType: The MIME type of the file (e.g., "application/pdf").
  * - data: The binary content of the file stored in the database.
- * - jobListing: The associated job listing, if the document is related to a job posting.
  * </p>
  */
 
@@ -43,11 +42,6 @@ public class Document {
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "data", nullable = false)
     private byte[] data;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_listing_id", referencedColumnName = "job_listing_id", nullable = true)
-    private JobListing jobListing;
-
 
 
 }
