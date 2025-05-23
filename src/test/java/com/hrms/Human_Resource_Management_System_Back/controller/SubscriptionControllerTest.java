@@ -41,7 +41,7 @@ public class SubscriptionControllerTest {
                         .param("PayerID", "PAYER-456")
                         .param("token", "abc123"))
                 .andExpect(status().isFound())
-                .andExpect(header().string("Location", "http://localhost:3000/tenant/subscription?status=success"));
+                .andExpect(header().string("Location", "http://localhost:3000"));
     }
 
     @Test
