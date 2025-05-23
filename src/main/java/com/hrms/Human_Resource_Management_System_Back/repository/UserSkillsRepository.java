@@ -32,5 +32,5 @@ public interface UserSkillsRepository extends BaseRepository<UserSkills, Integer
      * @param skillId the ID of the skill
      * @return an {@link Optional} containing the matching {@link UserSkills}, if found
      */
-    Optional<UserSkills> findByUserGeneralIdAndSkillId(Integer userGeneralId, Integer skillId);
+    Optional<UserSkills> findByUserGeneral_UserGeneralIdAndSkill_SkillId(Integer userGeneralId, Integer skillId);
 }
