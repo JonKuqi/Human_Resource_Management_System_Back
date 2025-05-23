@@ -1,6 +1,6 @@
 app:
   frontend:
-    url: ${FRONTEND_URL:http://localhost:3000}
+    url: ${FRONTEND_URL:https://humanresourcemanagementsystemfront-production.up.railway.app}
 
 spring:
   datasource:
