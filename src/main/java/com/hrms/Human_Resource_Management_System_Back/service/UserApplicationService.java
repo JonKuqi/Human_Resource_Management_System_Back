@@ -17,7 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-
+/**
+ * Service class for handling user applications to job listings.
+ * <p>
+ * This class manages the full application flow, including validating users,
+ * preventing duplicate applications, storing uploaded CVs, and saving
+ * application records in both public and tenant-specific schemas.
+ * </p>
+ */
 @Service
 @AllArgsConstructor
 public class UserApplicationService extends BaseService<UserApplication,Integer>{
@@ -31,12 +38,34 @@ public class UserApplicationService extends BaseService<UserApplication,Integer>
     private final ApplicationRepository applicationRepository;
 
 
+    /**
+     * Returns the repository responsible for managing {@link UserApplication} entities.
+     *
+     * @return the user application repository
+     */
     @Override
     protected BaseRepository<UserApplication, Integer> getRepository() {
         return repository;
     }
 
 
+    /**
+     * Handle the application process for a user applying to a job listing.
+     * <p>
+     * This method performs the following:
+     * <ul>
+     *     <li>Loads job and user information from the public schema</li>
+     *     <li>Checks for duplicate applications</li>
+     *     <li>Stores the applicant's CV document in the tenant schema</li>
+     *     <li>Saves a tenant-specific {@link Application} record</li>
+     *     <li>Stores a public {@link UserApplication} record for tracking</li>
+     * </ul>
+     * </p>
+     *
+     * @param dto    the application data transfer object containing user and job IDs
+     * @param cvFile the uploaded CV file
+     * @throws IOException if the CV file cannot be read
+     */
     @Transactional
     public void apply(UserApplicationDto dto, MultipartFile cvFile) throws IOException {
         JobListing jobListing = jobListingRepository.getReferenceById(dto.getJobListingID());

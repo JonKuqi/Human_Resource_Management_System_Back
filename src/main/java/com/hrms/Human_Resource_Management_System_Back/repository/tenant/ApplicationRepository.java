@@ -6,6 +6,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Repository interface for managing {@link Application} entities within tenant schemas.
+ * <p>
+ * This repository extends {@link BaseRepository} and provides methods for retrieving job applications
+ * submitted by users, particularly filtering them by associated document IDs (e.g., CVs).
+ * </p>
+ */
 @Repository
 public interface ApplicationRepository extends BaseRepository<Application, Integer> {
 
